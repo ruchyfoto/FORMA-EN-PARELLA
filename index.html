@@ -44,7 +44,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .who button[aria-pressed="true"]{border-color:var(--ac);background:var(--ac-soft)}
 .tabsbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:2px solid var(--line);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
 .tabs{display:flex;gap:2px;overflow-x:auto;max-width:760px;margin:0 auto;scrollbar-width:none}
-.tabs a{flex:1 0 auto;text-align:center;padding:12px 3px;font-family:var(--f-disp);font-size:.95rem;font-weight:600;text-transform:uppercase;letter-spacing:.02em;color:var(--muted);text-decoration:none;border-bottom:4px solid transparent;margin-bottom:-2px}
+.tabs a{flex:1 0 auto;text-align:center;padding:12px 2px;font-family:var(--f-disp);font-size:.9rem;font-weight:600;text-transform:uppercase;letter-spacing:0;color:var(--muted);text-decoration:none;border-bottom:4px solid transparent;margin-bottom:-2px}
 .tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--ac)}
 main{padding-block:18px;display:flex;flex-direction:column;gap:16px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
@@ -162,7 +162,10 @@ svg.chart text{fill:var(--muted);font-family:var(--f-body);font-size:10px}
 .figbox{background:var(--surface2);border-radius:10px;padding:10px 10px 8px}
 svg.fig{width:100%;max-width:340px;height:auto;display:block;margin:0 auto}
 svg.fig.one{max-width:150px}
-.figtip{margin:4px 0 0;font-size:.86rem;color:var(--muted);text-align:center}
+.figtip{margin:6px 0 0;font-size:.88rem;color:var(--muted)}
+.figtip b{color:var(--fg)}
+.card.hero{border:2px solid var(--ac);background:var(--ac-soft)}
+.card.hero h2{font-size:2rem}
 .week button.r{background:none;border:0;border-top:1px solid var(--line);text-align:left;width:100%;color:inherit;border-radius:0;padding-inline:4px}
 .week button.r:first-child{border-top:0}
 .week button.r.on{background:var(--ac-soft)}
@@ -370,6 +373,9 @@ P.plank={tip:'Colzes sota les espatlles, cos recte i abdomen contret. Aguanta el
  {hp:[63.3,80.5],t:192.5,ft:[106,90],wr:[48,90],eh:[-1,0.5]}]};
 P.sideplank={tip:'Cos en línia recta des del cap fins als peus. Aguanta i canvia de costat.',f:[
  {hp:[64.8,78.2],t:196,ft:[106,90],ft2:[106,90],wr:[36,90],eh:[0.3,1],wr2:[36,40],eh2:[0,-1]}]};
+P.reardelt={tip:'Tronc inclinat amb l’esquena recta. Obre els braços cap als costats fins l’altura de l’esquena.',f:[
+ {hp:[52,52],t:-30,ft:[58,92],wr:[82,66],db:1},
+ {hp:[52,52],t:-30,ft:[58,92],wr:[86,40],eh:[0,1],db:1}]};
 P.climber={tip:'Porta els genolls al pit alternativament, mantenint els malucs baixos.',f:[
  {hp:[67.4,74.3],t:204,ft:[107,92],ft2:[70,84],wr:[40,90],eh:[1,0],kh2:[-0.5,-1]},
  {hp:[67.4,74.3],t:204,ft:[70,84],ft2:[107,92],wr:[40,90],eh:[1,0],kh:[-0.5,-1]}]};
@@ -433,94 +439,167 @@ var MONTHS=['gener','febrer','març','abril','maig','juny','juliol','agost','set
 
 /* ---------- Objectius ---------- */
 var GOALS={
-  perdre:{label:'Perdre greix',sets:3,reps:'15',repsN:15,rest:45,count:8,cardio:8,kcal:-450,prot:2.0,load:0.85},
-  tonificar:{label:'Tonificar',sets:3,reps:'12',repsN:12,rest:60,count:8,cardio:6,kcal:0,prot:1.6,load:1},
-  muscul:{label:'Guanyar múscul',sets:4,reps:'8–10',repsN:9,rest:90,count:6,cardio:0,kcal:250,prot:1.8,load:1.15}
+  perdre:{label:'Perdre greix',sets:3,r:[15,15],rest:45,kcal:-450,prot:2.0,load:0.85},
+  tonificar:{label:'Tonificar',sets:3,r:[12,12],rest:60,kcal:0,prot:1.6,load:1},
+  muscul:{label:'Guanyar múscul',sets:4,r:[8,10],rest:90,kcal:250,prot:1.8,load:1.15}
 };
 
-/* ---------- Exercicis (gimnàs i casa) ---------- */
-function x(g,gb,h,o){return Object.assign({g:{n:g,bw:gb},h:{n:h}},o||{});}
+/* ---------- Rutina setmanal ----------
+   Cada exercici: g = gimnàs, h = casa, fg/fh = dibuix, m = músculs, alt = variant que alterna cada 4 setmanes. */
+function x(g,gb,h,o){o=o||{};var r={g:{n:g,bw:gb},h:{n:h}};for(var k in o)r[k]=o[k];return r;}
+function C(mins,g,h,l){return {mins:mins,g:g,h:h,l:l};}
 var PLAN={
-1:{short:'Pit',title:'Pit, espatlles i tríceps',wu:'Cercles de braços, obertures de pit i rotacions d’espatlla',
+1:{short:'Inferior A',title:'Inferior A',mus:'Quàdriceps, glutis i bessons',
+ wu:'Esquats sense pes, cercles de malucs i elevacions de talons',
  ex:[
-  x('Press de pit a la màquina o amb manuelles al banc',0.35,'Flexions (amb els genolls a terra si costa)',{easy:'Genolls a terra o mans sobre el sofà.'}),
-  x('Press inclinat amb manuelles',0.15,'Flexions amb els peus sobre una cadira',{each:true,easy:'Fes flexions normals.'}),
-  x('Press d’espatlles a la màquina',0.25,'Flexions en V (cul amunt, cap cap a terra)',{easy:'Mans més lluny dels peus i baixa poc.'}),
-  x('Obertures a la màquina pec-deck',0.25,'Flexions amb les mans més separades'),
-  x('Elevacions laterals amb manuelles',0.06,'Elevacions laterals amb ampolles d’1,5 L',{each:true}),
-  x('Extensió de tríceps a la politja',0.2,'Fons de tríceps a la vora d’una cadira',{easy:'Peus més a prop de la cadira.'}),
-  x('Press francès amb manuelles',0.12,'Flexions de diamant (mans juntes)'),
-  x('Planxa frontal',null,'Planxa frontal',{t:40,easy:'Genolls a terra.'})
+  x('Esquat a la Smith o a la màquina hack',0.5,'Esquat amb pes corporal i pausa d’1 s a baix',{fg:'squat',fh:'squat',m:'Quàdriceps i glutis',easy:'Seu a una cadira a cada repetició.'}),
+  x('Premsa de cames',1.0,'Esquat búlgar (peu de darrere sobre el sofà)',{fg:'legpress',fh:'bulgarian',m:'Quàdriceps i gluti major',easy:'Fes-lo sense recolzar el peu.'}),
+  x('Hip thrust amb barra o a la màquina',0.6,'Pont de glutis a una cama',{fg:'hipthrust',fh:'bridge1',m:'Gluti major',easy:'Pont amb dues cames.',
+    alt:x('Patada de glutis a la politja',0.12,'Patada de glutis a quatre grapes',{fg:'kickback',fh:'kickback',m:'Gluti major i mitjà'})}),
+  x('Extensió de quàdriceps a la màquina',0.3,'Esquat amb pausa de 3 s a baix',{fg:'legext',fh:'squat',m:'Quàdriceps'}),
+  x('Gambades amb manuelles',0.15,'Gambades caminant',{each:true,fg:'lunge',fh:'lunge',m:'Quàdriceps, glutis i equilibri'}),
+  x('Elevació de talons a la premsa',0.6,'Elevacions de talons a un escaló',{fg:'calf',fh:'calf',m:'Bessons (gastrocnemi)'}),
+  x('Elevació de talons asseguda a la màquina',0.35,'Elevacions de talons asseguda amb motxilla als genolls',{fg:'calf',fh:'calf',m:'Bessons (sol)'})
  ],
- cardio:{g:'Cinta: 1 min ràpid, 1 min suau.',h:'Jumping jacks 40 s i mountain climbers 20 s, en rondes.',hl:'Marxa ràpida al lloc o caminar amb braços actius, sense salts.'},
- str:[['Pit a la porta','30 s per braç, colze a 90° contra el marc'],['Espatlla creuada','30 s per braç'],['Tríceps sobre el cap','30 s per braç'],['Coll lateral','30 s per costat, sense estirar fort'],['Avantbraços','Palmell amunt i avall, 30 s cada posició'],['Cobra suau','Boca avall, 45 s'],['Postura del nen','Braços allargats, 60 s'],['Rotació toràcica','De genolls, 30 s per costat']]},
-2:{short:'Cames',title:'Cames: quàdriceps i glutis',wu:'Esquats sense pes, balanceig de cames i cercles de malucs',
+ cardio:C([8,0,0],{t:'Cinta en pujada: camina ràpid amb una inclinació del 8 al 10 %.',f:'run'},{t:'Marxa ràpida amb pujada o escales a ritme constant.',f:'run'},{t:'Marxa ràpida amb pujada, sense salts.',f:'run'}),
+ str:[['Quàdriceps de peu','30 s per cama',60],['Flexors del maluc (gambada baixa)','30 s per cama',60],['Glutis en figura 4','30 s per cama',60],['Isquios asseguts','45 s',45],['Panxells a la paret','30 s per cama',60],['Postura del nen','45 s',45]]},
+
+2:{short:'Superior A',title:'Superior A',mus:'Pit, espatlles i tríceps',
+ wu:'Cercles de braços, obertures de pit i rotacions d’espatlla',
  ex:[
-  x('Esquat a la Smith o a la màquina hack',0.5,'Esquat amb pes corporal',{easy:'Seu a una cadira a cada repetició.'}),
-  x('Premsa de cames',1.0,'Esquat búlgar (peu de darrere sobre el sofà)',{easy:'Fes-lo sense recolzar el peu.'}),
-  x('Gambades amb manuelles',0.15,'Gambades caminant',{each:true}),
-  x('Extensió de quàdriceps a la màquina',0.3,'Esquat amb pausa de 3 s a baix'),
-  x('Hip thrust amb barra o a la màquina',0.6,'Pont de glutis a una cama',{easy:'Pont amb dues cames.'}),
-  x('Màquina d’abductors',0.4,'Abduccions laterals amb la cama estesa'),
-  x('Elevació de talons a la premsa',0.6,'Elevacions de talons a un escaló'),
-  x('Crunch invers al banc',null,'Bicicleta abdominal')
+  x('Press de pit amb manuelles al banc pla',0.2,'Flexions (amb els genolls a terra si costa)',{each:true,fg:'bench',fh:'pushup',m:'Pectoral, deltoide anterior i tríceps',easy:'Genolls a terra o mans sobre el sofà.'}),
+  x('Press inclinat amb manuelles',0.15,'Flexions amb els peus sobre una cadira',{each:true,fg:'incline',fh:'pushup_decline',m:'Pectoral superior i deltoide anterior',easy:'Fes flexions normals.'}),
+  x('Press d’espatlles amb manuelles assegut',0.15,'Flexions en V (cul amunt, cap cap a terra)',{each:true,fg:'ohp',fh:'pike',m:'Deltoide anterior i lateral',easy:'Mans més lluny dels peus i baixa poc.'}),
+  x('Elevacions laterals amb manuelles',0.06,'Elevacions laterals amb ampolles d’1,5 L',{each:true,fg:'latraise',fh:'latraise',m:'Deltoide lateral',
+    alt:x('Elevacions laterals a la politja',0.05,'Elevacions laterals amb una goma elàstica',{each:true,fg:'latraise',fh:'latraise',m:'Deltoide lateral'})}),
+  x('Obertures a la màquina pec-deck',0.25,'Obertures tombat amb ampolles o garrafes',{fg:'fly',fh:'fly',m:'Pectoral (part interna)',
+    alt:x('Creuaments a la politja',0.1,'Flexions amb les mans més separades',{each:true,fg:'fly',fh:'pushup',m:'Pectoral (part interna)'})}),
+  x('Extensió de tríceps a la politja',0.2,'Fons de tríceps a la vora d’una cadira',{fg:'pushdown',fh:'dips',m:'Tríceps',easy:'Peus més a prop de la cadira.'}),
+  x('Press francès amb manuelles',0.12,'Flexions de diamant (mans juntes)',{fg:'skull',fh:'pushup',m:'Tríceps (cap llarg)'})
  ],
- cardio:{g:'Bici estàtica a ritme moderat amb 4 esprints de 20 s.',h:'Córrer suau o caminar ràpid. Pots alternar 1 min corrent i 1 min caminant.',hl:'Caminar ràpid, millor si trobes pendent.'},
- str:[['Quàdriceps de peu','30 s per cama'],['Flexors del maluc','Gambada baixa, 30 s per cama'],['Glutis en figura 4','Tombat, 30 s per cama'],['Isquios asseguts','Cames estirades, 60 s'],['Papallona (adductors)','60 s'],['Panxells a la paret','30 s per cama'],['Gos mirant avall','60 s'],['Postura del nen','60 s']]},
-3:{short:'Esquena',title:'Esquena i bíceps',wu:'Gat-camell, retracció d’escàpules i cercles amb els braços',
+ cardio:null,
+ str:[['Pit a la porta','30 s per braç',60],['Espatlla creuada','30 s per braç',60],['Tríceps sobre el cap','30 s per braç',60],['Coll lateral','20 s per costat',40],['Rotació toràcica','30 s per costat',60],['Postura del nen','45 s',45]]},
+
+3:{short:'Recuperació',title:'Recuperació activa',mus:'Abdomen, core i cardio suau',
+ wu:'Gat-camell, cercles de malucs i rotacions toràciques',over:{sets:3,r:[12,15],rest:30},
  ex:[
-  x('Jalón al pit a la politja',0.5,'Remada inclinada amb motxilla carregada',{easy:'Motxilla més lleugera.'}),
-  x('Remada asseguda a la politja',0.5,'Superman amb pausa de 2 s'),
-  x('Remada amb una mà amb manuella',0.2,'Remada a una mà amb motxilla o garrafa',{each:true}),
-  x('Face pull a la politja',0.15,'Y-T-W tombat boca avall'),
-  x('Extensió lumbar al banc romà',null,'Bird-dog (gos i ocell)'),
-  x('Curl de bíceps amb manuelles',0.1,'Curl amb ampolles o motxilla',{each:true}),
-  x('Curl martell amb manuelles',0.1,'Curl martell amb garrafes',{each:true}),
-  x('Elevació de cames al banc',null,'Dead bug')
+  x('Planxa frontal',null,'Planxa frontal',{t:40,fg:'plank',fh:'plank',m:'Abdominal profund i estabilització lumbar',easy:'Genolls a terra.'}),
+  x('Crunch invers al banc',null,'Crunch invers a terra',{fg:'revcrunch',fh:'revcrunch',m:'Abdominal inferior'}),
+  x('Dead bug',null,'Dead bug',{fg:'deadbug',fh:'deadbug',m:'Core profund i coordinació'}),
+  x('Planxa lateral',null,'Planxa lateral',{t:30,fg:'sideplank',fh:'sideplank',m:'Oblics i gluti mitjà',easy:'Genoll inferior a terra.'}),
+  x('Bird-dog',null,'Bird-dog',{fg:'birddog',fh:'birddog',m:'Lumbars, glutis i core'}),
+  x('Rotació russa amb disc',0.08,'Rotació russa amb una ampolla',{fg:'russian',fh:'russian',m:'Oblics'}),
+  x('Bicicleta abdominal',null,'Bicicleta abdominal',{fg:'bicycle',fh:'bicycle',m:'Abdominals i oblics'})
  ],
- cardio:{g:'Ergòmetre de rem: 1 min ritme fort, 1 min suau.',h:'Saltar a la corda (o jumping jacks) 40 s i descans 20 s, en rondes.',hl:'Marxa ràpida al lloc 40 s i descans 20 s, en rondes.'},
- str:[['Gat-camell','10 repeticions lentes, 60 s'],['Postura del nen amb braços a un costat','30 s per costat'],['Dorsals agafat a un marc','30 s per costat'],['Bíceps contra la paret','30 s per braç'],['Rotació lumbar tombat','30 s per costat'],['Trapezi i coll','30 s per costat'],['Cobra','45 s'],['Isquios tombat amb tovallola','30 s per cama']]},
-4:{short:'Espatlla',title:'Espatlles, core i cardio',wu:'Cercles de braços, rotacions externes amb goma o sense',
+ cardio:C([15,12,10],{t:'Bicicleta estàtica a ritme suau, que et deixi parlar.',f:'bike'},{t:'Caminada ràpida o bici passejant, a ritme suau.',f:'run'},{t:'Caminada ràpida a ritme suau.',f:'run'}),
+ str:[['Gat-camell','60 s',60],['Cobra suau','45 s',45],['Torsió tombat','30 s per costat',60],['Gambada baixa','30 s per cama',60],['Cercles de malucs','30 s per costat',60],['Postura del nen','45 s',45]]},
+
+4:{short:'Inferior B',title:'Inferior B',mus:'Glutis, isquiotibials i abductors',
+ wu:'Pes mort sense pes, balanceig de cames i pont de glutis',
  ex:[
-  x('Press militar amb manuelles',0.18,'Press d’espatlles amb garrafes',{each:true}),
-  x('Elevacions laterals a la politja',0.06,'Elevacions laterals amb ampolles',{each:true}),
-  x('Elevacions frontals amb disc',0.1,'Elevacions frontals amb ampolles'),
-  x('Ocells a la pec-deck inversa',0.2,'Elevacions posteriors inclinat amb ampolles',{each:true}),
-  x('Encongiments amb manuelles',0.25,'Encongiments amb motxilla'),
-  x('Planxa lateral',null,'Planxa lateral',{t:30,easy:'Genoll inferior a terra.'}),
-  x('Crunch a la màquina',0.3,'Crunch abdominal'),
-  x('Rotació russa amb disc',0.1,'Rotació russa amb ampolla')
+  x('Pes mort romanès amb barra o manuelles',0.5,'Pes mort romanès amb motxilla',{fg:'rdl',fh:'rdl',m:'Isquiotibials i gluti major',easy:'Genolls una mica flexionats i motxilla lleugera.'}),
+  x('Curl femoral estirat a la màquina',0.3,'Curl femoral amb tovallola lliscant',{fg:'legcurl',fh:'bridge_curl',m:'Isquiotibials'}),
+  x('Patada de glutis a la politja',0.12,'Patada de glutis a quatre grapes',{fg:'kickback',fh:'kickback',m:'Gluti major',
+    alt:x('Hip thrust amb una manuella',0.4,'Pont de glutis amb pausa de 2 s',{fg:'hipthrust',fh:'bridge',m:'Gluti major'})}),
+  x('Gambada enrere amb manuelles',0.15,'Gambada enrere',{each:true,fg:'lunge',fh:'lunge',m:'Glutis i quàdriceps'}),
+  x('Màquina d’abductors',0.4,'Abduccions laterals amb una goma elàstica',{fg:'abduct',fh:'abduct',m:'Gluti mitjà i menor'}),
+  x('Esquat sumo amb una manuella',0.35,'Esquat sumo amb motxilla',{fg:'sumo',fh:'sumo',m:'Adductors i glutis'}),
+  x('Màquina d’adductors',0.4,'Pont de glutis amb un coixí entre els genolls',{fg:'adduct',fh:'bridge',m:'Adductors'})
  ],
- cardio:{g:'El·líptica en intervals: 1 min fort, 1 min suau.',h:'6 rondes: 30 s esprint i 60 s caminant.',hl:'6 rondes: 30 s marxa molt ràpida i 60 s suau, sense salts.'},
- str:[['Espatlla creuada','30 s per braç'],['Posterior d’espatlla','Braç doblegat darrere l’esquena, 30 s'],['Tríceps sobre el cap','30 s per braç'],['Coll lateral','30 s per costat'],['Pit a la porta','30 s per braç'],['Rotació toràcica','30 s per costat'],['Cobra','Per estirar els abdominals, 45 s'],['Postura del nen','60 s']]},
-5:{short:'Isquios',title:'Isquiotibials, glutis i core',wu:'Pes mort sense pes, balanceig de cames i pont de glutis',
+ cardio:C([8,6,0],{t:'Cinta: 1 min trot suau i 1 min caminant, repetit.',f:'run'},{t:'Córrer suau: 1 min corrent i 1 min caminant, repetit.',f:'run'},{t:'Marxa ràpida amb 30 s més intensos cada minut, sense salts.',f:'run'}),
+ str:[['Isquios tombat amb tovallola','30 s per cama',60],['Glutis en figura 4','30 s per cama',60],['Adductors en papallona','45 s',45],['Flexors del maluc','30 s per cama',60],['Panxells a la paret','30 s per cama',60],['Postura del nen','45 s',45]]},
+
+5:{short:'Superior B',title:'Superior B',mus:'Esquena, dorsals, bíceps i espatlla posterior',
+ wu:'Gat-camell, retracció d’escàpules i cercles amb els braços',
  ex:[
-  x('Pes mort romanès amb barra o manuelles',0.5,'Pes mort romanès amb motxilla',{easy:'Genolls una mica flexionats i motxilla lleugera.'}),
-  x('Curl femoral estirat a la màquina',0.3,'Curl femoral amb tovallola lliscant'),
-  x('Patada de glutis a la politja',0.12,'Patada de glutis a quatre grapes'),
-  x('Gambada enrere amb manuelles',0.15,'Gambada enrere',{each:true}),
-  x('Esquat sumo amb una manuella',0.35,'Esquat sumo amb motxilla'),
-  x('Màquina d’adductors',0.4,'Pont de glutis amb un coixí entre els genolls'),
-  x('Panxells asseguts a la màquina',0.35,'Elevacions de talons a una cama'),
-  x('Escaladors (mountain climbers)',null,'Escaladors (mountain climbers)',{t:30,easy:'Fes-los lents.'})
+  x('Jalón al pit a la politja',0.5,'Remada inclinada amb motxilla carregada',{fg:'pulldown',fh:'row_bent',m:'Dorsal ample',easy:'Motxilla més lleugera.'}),
+  x('Remada asseguda a la politja',0.5,'Remada a una mà amb garrafa o motxilla',{fg:'row_seated',fh:'row_bent',m:'Dorsal mitjà i romboides'}),
+  x('Remada amb una mà amb manuella',0.2,'Superman amb pausa de 2 s',{each:true,fg:'row_bent',fh:'superman',m:'Dorsal i trapezi mitjà',
+    alt:x('Remada al banc inclinat amb manuelles',0.15,'Remada inclinada amb dues garrafes',{each:true,fg:'row_bent',fh:'row_bent',m:'Dorsal i trapezi mitjà'})}),
+  x('Face pull a la politja',0.15,'Y-T-W tombat boca avall',{fg:'facepull',fh:'superman',m:'Deltoide posterior i trapezi'}),
+  x('Ocells a la pec-deck inversa',0.2,'Elevacions posteriors inclinat amb ampolles',{fg:'reardelt',fh:'reardelt',m:'Deltoide posterior'}),
+  x('Encongiments amb manuelles',0.25,'Encongiments amb motxilla',{fg:'shrug',fh:'shrug',m:'Trapezi superior'}),
+  x('Curl de bíceps amb manuelles',0.1,'Curl amb ampolles o motxilla',{each:true,fg:'curl',fh:'curl',m:'Bíceps'}),
+  x('Curl martell amb manuelles',0.1,'Curl martell amb garrafes',{each:true,fg:'curl',fh:'curl',m:'Braquial i avantbraços'})
  ],
- cardio:{g:'Cinta en pendent, marxa ràpida o trot suau.',h:'Córrer suau, alternant 2 min corrent i 1 min caminant.',hl:'Caminar ràpid, millor si trobes pendent.'},
- str:[['Isquios de peu','Cama a l’escaló, 30 s per cama'],['Glutis en figura 4','30 s per cama'],['Genoll al pit','Tombat, 30 s per cama'],['Flexors del maluc','30 s per cama'],['Adductors en gambada lateral','30 s per costat'],['Panxells a la paret','30 s per cama'],['Gos mirant avall','60 s'],['Torsió lumbar tombat','30 s per costat']]},
-6:{short:'Complet',title:'Cos complet',wu:'Esquats, flexions a la paret i rotacions de malucs',
+ cardio:C([6,0,0],{t:'Ergòmetre de remada a ritme suau i constant.',f:'rower'},{t:'Jumping jacks 40 s i descans 20 s, en rondes.',f:'jack'},{t:'Marxa ràpida al lloc, sense salts.',f:'run'}),
+ str:[['Dorsals agafat a un marc','30 s per costat',60],['Bíceps contra la paret','30 s per braç',60],['Posterior d’espatlla','30 s per braç',60],['Trapezi i coll','20 s per costat',40],['Gat-camell','45 s',45],['Postura del nen','45 s',45]]},
+
+6:{short:'Full body',title:'Full body (opcional)',optional:true,mus:'Cos complet, resistència muscular i abdomen',
+ wu:'Esquats, flexions a la paret i rotacions de malucs',over:{sets:3,r:[15,15],rest:40},
  ex:[
-  x('Esquat goblet amb manuella',0.25,'Esquat amb motxilla al pit'),
-  x('Press de pit a la màquina',0.35,'Flexions',{easy:'Genolls a terra o mans sobre el sofà.'}),
-  x('Jalón al pit a la politja',0.5,'Remada inclinada amb motxilla'),
-  x('Pes mort romanès',0.5,'Bom dia (good morning) amb motxilla'),
-  x('Press d’espatlles a la màquina',0.25,'Flexions en V'),
-  x('Gambades caminant amb manuelles',0.15,'Gambades caminant',{each:true}),
-  x('Curl de bíceps amb manuelles',0.1,'Curl amb ampolles',{each:true}),
-  x('Planxa frontal',null,'Planxa frontal',{t:45,easy:'Genolls a terra.'})
+  x('Esquat goblet amb manuella',0.25,'Esquat amb motxilla al pit',{fg:'squat',fh:'squat',m:'Cames i glutis'}),
+  x('Press de pit amb manuelles',0.15,'Flexions',{each:true,fg:'bench',fh:'pushup',m:'Pit i tríceps',easy:'Genolls a terra o mans sobre el sofà.'}),
+  x('Remada amb una mà amb manuella',0.15,'Remada a una mà amb garrafa',{each:true,fg:'row_bent',fh:'row_bent',m:'Esquena i bíceps'}),
+  x('Pes mort romanès lleuger',0.3,'Bom dia (good morning) amb motxilla',{fg:'rdl',fh:'rdl',m:'Isquiotibials i lumbars'}),
+  x('Press d’espatlles amb manuelles',0.12,'Flexions en V',{each:true,fg:'ohp',fh:'pike',m:'Espatlles'}),
+  x('Gambades caminant amb manuelles',0.12,'Gambades caminant',{each:true,fg:'lunge',fh:'lunge',m:'Cames i glutis'}),
+  x('Escaladors (mountain climbers)',null,'Escaladors (mountain climbers)',{t:30,fg:'climber',fh:'climber',m:'Core i resistència',easy:'Fes-los lents.'}),
+  x('Planxa frontal',null,'Planxa frontal',{t:40,fg:'plank',fh:'plank',m:'Core',easy:'Genolls a terra.'}),
+  x('Bicicleta abdominal',null,'Bicicleta abdominal',{fg:'bicycle',fh:'bicycle',m:'Abdominals i oblics'})
  ],
- cardio:{g:'Cinta o bici a ritme moderat, constant.',h:'Córrer suau o marxa ràpida, a ritme constant.',hl:'Marxa ràpida a ritme constant.'},
- str:[['Gos mirant avall','60 s'],['Gambada baixa amb rotació','30 s per costat'],['Quàdriceps de peu','30 s per cama'],['Pit a la porta','30 s per braç'],['Gat-camell','60 s'],['Glutis en figura 4','30 s per cama'],['Isquios asseguts','60 s'],['Postura del nen','60 s']]},
-0:{short:'Descans',title:'Dia de descans',rest:true,
- str:[['Cercles de coll','Suaus, 30 s per costat'],['Cercles d’espatlles','30 s'],['Gat-camell','60 s'],['Gambada baixa','30 s per cama'],['Glutis en figura 4','30 s per cama'],['Postura del nen','60 s'],['Isquios asseguts','60 s'],['Torsió tombat','30 s per costat']]}
+ cardio:C([10,8,6],{t:'Circuit funcional: remada a l’ergòmetre, escaladors, jumping jacks i esquats amb salt suau (40 s de feina i 20 s de descans).',f:'climber'},{t:'Circuit funcional: escaladors, jumping jacks, esquats amb salt suau i planxa (40 s de feina i 20 s de descans).',f:'climber'},{t:'Circuit sense impacte: escaladors lents, marxa al lloc, esquats i planxa (40 s de feina i 20 s de descans).',f:'climber'}),
+ str:[['Gos mirant avall','45 s',45],['Gambada baixa amb rotació','30 s per costat',60],['Quàdriceps de peu','30 s per cama',60],['Pit a la porta','30 s per braç',60],['Glutis en figura 4','30 s per cama',60],['Postura del nen','45 s',45]]}
+};
+
+var PHASES=['Base','Més repeticions','Més sèries','Descàrrega'];
+var PHASE_TXT=[
+ 'Setmana base: aprèn bé la tècnica i troba una càrrega còmoda.',
+ 'Setmana de volum: 2 repeticions més a cada sèrie.',
+ 'Setmana intensa: una sèrie més als 3 primers exercicis.',
+ 'Setmana de descàrrega: una sèrie menys i càrregues més lleugeres per recuperar. Després tornes a començar amb una mica més de pes.'];
+/* Errors comuns per dibuix */
+var ERRS={
+ squat:'Genolls cap a dins, talons aixecats o esquena arrodonida.',
+ legpress:'Aixecar el cul del seient o bloquejar els genolls a dalt.',
+ bulgarian:'Peu del davant massa a prop i tronc inclinat endavant.',
+ lunge:'Genoll del davant cap a dins, passos massa curts o tronc inclinat.',
+ legext:'Estirar de cop, bloquejar els genolls o balancejar-te.',
+ bridge:'Arquejar la lumbar en comptes d’empènyer amb els glutis.',
+ bridge1:'Girar els malucs o deixar caure el de la cama estesa.',
+ hipthrust:'Hiperextensió lumbar a dalt o empènyer només amb la punta dels peus.',
+ calf:'Rebotar sense control o no baixar del tot.',
+ revcrunch:'Agafar impuls amb les cames en lloc de contreure l’abdomen.',
+ bicycle:'Estirar el coll amb les mans i anar massa ràpid.',
+ crunch:'Estirar del coll o aixecar tota l’esquena.',
+ bench:'Obrir els colzes a 90°, arquejar molt l’esquena o rebotar al pit.',
+ incline:'Banc massa inclinat (treballa més l’espatlla) o rebotar.',
+ pushup:'Malucs caiguts o cul alt, colzes oberts o no baixar prou.',
+ pushup_decline:'Deixar caure la lumbar i encongir el coll.',
+ pike:'Baixar només amb l’esquena i no amb els braços.',
+ ohp:'Arquejar la lumbar o empènyer amb les cames.',
+ pushdown:'Moure els colzes endavant i endarrere o inclinar-te sobre la politja.',
+ dips:'Baixar massa (castiga l’espatlla) i separar els colzes.',
+ skull:'Obrir els colzes o deixar caure el pes cap al front.',
+ fly:'Estirar massa els braços cap enrere i bloquejar els colzes.',
+ latraise:'Pujar per sobre de les espatlles, balancejar el cos o posar massa pes.',
+ frontraise:'Balancejar el tronc i pujar per sobre de les espatlles.',
+ shrug:'Fer cercles amb les espatlles o flexionar els colzes.',
+ pulldown:'Tirar de la barra darrere el coll o balancejar l’esquena.',
+ row_seated:'Arrodonir l’esquena i tirar amb els braços en lloc dels omòplats.',
+ row_bent:'Esquena arrodonida o tirar d’impuls amb el tronc.',
+ facepull:'Posar massa pes i tirar amb la lumbar cap enrere.',
+ reardelt:'Fer-ho amb impuls o aixecar amb el trapezi en comptes de l’espatlla.',
+ superman:'Aixecar molt el coll o arquejar la lumbar de més.',
+ birddog:'Girar els malucs o aixecar la cama massa amunt.',
+ backext:'Passar-te de l’horitzontal i arquejar-te.',
+ curl:'Balancejar el cos i avançar els colzes.',
+ deadbug:'Deixar que la lumbar se separi del terra.',
+ plank:'Malucs caiguts o cul alt, o aguantar la respiració.',
+ sideplank:'Deixar caure el maluc o girar el cos cap endavant.',
+ climber:'Cul alt, mans massa endavant o anar tan ràpid que perds el control.',
+ russian:'Girar només els braços i arrodonir l’esquena.',
+ legcurl:'Aixecar els malucs del banc i rebotar.',
+ bridge_curl:'Deixar caure els malucs mentre llisques els talons.',
+ rdl:'Arrodonir l’esquena o flexionar massa els genolls (és un moviment de maluc).',
+ kickback:'Arquejar la lumbar per pujar més la cama.',
+ sumo:'Genolls cap a dins i tronc inclinat.',
+ abduct:'Moure amb impuls o ajudar-te amb la lumbar.',
+ adduct:'Tancar de cop, sense control.',
+ run:'Passos massa llargs, tensió a les espatlles o començar massa ràpid.',
+ jack:'Aterrar amb els genolls rígids; baixa l’impacte si molesta.',
+ bike:'Seient massa baix, esquena arrodonida o fer tota la força amb la punta del peu.',
+ rower:'Tirar només amb els braços; comença sempre amb les cames.'
 };
 
 /* ---------- Dieta ---------- */
@@ -557,28 +636,6 @@ function calc(P){
   var carb=Math.max(0,Math.round((kcal-prot*4-fat*9)/4));
   return {bmr:Math.round(bmr),tdee:Math.round(tdee),kcal:kcal,prot:prot,fat:fat,carb:carb,water:Math.round((w*30+500)/100)/10,bmi:w/Math.pow(h/100,2)};
 }
-function exList(p,goal){return p.ex.slice(0,GOALS[goal].count);}
-function exBlock(e,g){var t=e.t?e.t:g.repsN*3;var rest=e.t?30:g.rest;return g.sets*(t+rest);}
-function totalMin(p,goal){
-  var g=GOALS[goal],s=300;
-  exList(p,goal).forEach(function(e){s+=exBlock(e,g);});
-  s+=g.cardio*60;
-  return Math.round(s/60);
-}
-function loadFor(e,P){
-  if(!e.g.bw)return null;
-  var lvl=P.level==='principiant'?0.8:1;
-  var kg=P.weight*e.g.bw*lvl*GOALS[P.goal].load;
-  return Math.max(2.5,Math.round(kg/2.5)*2.5);
-}
-
-/* ---------- Cardio: dibuixos ---------- */
-PLAN[1].cardio.gf='run';PLAN[1].cardio.hf='jack';PLAN[1].cardio.lf='run';
-PLAN[2].cardio.gf='bike';PLAN[2].cardio.hf='run';PLAN[2].cardio.lf='run';
-PLAN[3].cardio.gf='rower';PLAN[3].cardio.hf='jack';PLAN[3].cardio.lf='run';
-PLAN[4].cardio.gf='run';PLAN[4].cardio.hf='run';PLAN[4].cardio.lf='run';
-PLAN[5].cardio.gf='run';PLAN[5].cardio.hf='run';PLAN[5].cardio.lf='run';
-PLAN[6].cardio.gf='bike';PLAN[6].cardio.hf='run';PLAN[6].cardio.lf='run';
 
 var FIGRULES=[
  [/flexions amb els peus/,'pushup_decline'],[/flexions en v/,'pike'],[/flexions/,'pushup'],
@@ -624,7 +681,7 @@ function dayInfo(P,dateIso){
 }
 function weekDates(mon){var o=[],d=parse(mon);for(var i=0;i<7;i++){o.push(iso(d));d.setDate(d.getDate()+1);}return o;}
 
-if(typeof module!=='undefined'){module.exports={PLAN:PLAN,GOALS:GOALS,totalMin:totalMin,calc:calc,figId:figId,dayInfo:dayInfo,RESTS:RESTS,mondayOf:mondayOf};}
+if(typeof module!=='undefined'){module.exports={PLAN:PLAN,GOALS:GOALS,calc:calc,figId:figId,dayInfo:dayInfo,RESTS:RESTS,mondayOf:mondayOf,ERRS:ERRS,build:build,prog:prog};}
 if(typeof document==='undefined')return;
 
 /* ---------- Estat ---------- */
@@ -634,7 +691,7 @@ function parse(s){var a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2]);}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function fmt(n,d){return Number(n).toLocaleString('ca',{maximumFractionDigits:d==null?1:d});}
 var TODAY=iso(new Date());
-function newPerson(name,sex,age,h,w,goal,mode){return {name:name,sex:sex,age:age,height:h,weight:w,goal:goal,level:'principiant',mode:mode,custom:false,log:[],done:{},sets:{},opt:{},rest:{},restPref:'rota',ts:0};}
+function newPerson(name,sex,age,h,w,goal,mode){return {name:name,sex:sex,age:age,height:h,weight:w,goal:goal,level:'principiant',mode:mode,custom:false,log:[],done:{},sets:{},opt:{},rest:{},fb:{},start:'',restPref:'rota',ts:0};}
 function defaults(){return {cur:0,sync:{code:''},people:[newPerson('Jo','M',30,178,75,'tonificar','gym'),newPerson('Parella','F',28,166,62,'perdre','home')]};}
 var S;
 try{S=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){S=null;}
@@ -642,7 +699,7 @@ if(!S){try{var O=JSON.parse(localStorage.getItem('forma-parella-v1')||'null');
   if(O&&O.people&&O.people.length===2){O.people.forEach(function(P,i){P.done=(O.done&&O.done[i])||{};P.sets=(O.sets&&O.sets[i])||{};P.opt=(O.opt&&O.opt[i])||{};P.rest={};P.restPref='rota';P.ts=P.custom?Date.now():0;});S={cur:O.cur||0,people:O.people,sync:{code:''}};}}catch(e){}}
 if(!S||!S.people||S.people.length!==2)S=defaults();
 S.sync=S.sync||{code:''};
-S.people.forEach(function(P){P.done=P.done||{};P.sets=P.sets||{};P.opt=P.opt||{};P.rest=P.rest||{};P.log=P.log||[];if(P.restPref==null)P.restPref='rota';P.ts=P.ts||0;});
+S.people.forEach(function(P){P.done=P.done||{};P.sets=P.sets||{};P.opt=P.opt||{};P.rest=P.rest||{};P.fb=P.fb||{};if(!P.start)P.start=mondayOf(TODAY);P.log=P.log||[];if(P.restPref==null)P.restPref='rota';P.ts=P.ts||0;});
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function touch(i){S.people[i].ts=Date.now();save();schedulePush();}
 var UI={sel:TODAY,cm:new Date().getMonth(),cy:new Date().getFullYear(),view:'calendari'};
@@ -690,7 +747,7 @@ function syncNow(){
         if((+d.people[i].ts||0)>(+S.people[i].ts||0)){S.people[i]=d.people[i];changed=true;}
       });
     }
-    S.people.forEach(function(P){P.done=P.done||{};P.sets=P.sets||{};P.opt=P.opt||{};P.rest=P.rest||{};P.log=P.log||[];});
+    S.people.forEach(function(P){P.done=P.done||{};P.sets=P.sets||{};P.opt=P.opt||{};P.rest=P.rest||{};P.fb=P.fb||{};if(!P.start)P.start=mondayOf(TODAY);P.log=P.log||[];});
     SY.state='ok';SY.last=Date.now();SY.msg='';save();
     if(changed&&!busyEditing())render();
   }).catch(function(e){
@@ -794,9 +851,55 @@ function restCard(P,info){
   h+='</select></div></div>';
   return h;
 }
+function goalIdx(P){return P.goal==='perdre'?0:(P.goal==='tonificar'?1:2);}
+function prog(P,di){
+  var w=Math.max(0,weekIndex(mondayOf(di))-weekIndex(P.start||mondayOf(TODAY))),c=w%4,b=Math.floor(w/4);
+  return {w:w,c:c,b:b,label:PHASES[c],txt:PHASE_TXT[c],loadMul:(1+0.05*Math.min(b,6))*(c===3?0.9:1)};
+}
+function fatigue(P){
+  var ks=Object.keys(P.fb||{}).sort(),l=ks.slice(-2).map(function(k){return P.fb[k];});
+  if(l.length<2)return {m:1,t:''};
+  if(l[0]==='d'&&l[1]==='d')return {m:0.9,t:'Les dues últimes sessions t’han costat molt. He baixat les càrregues un 10 %.'};
+  if(l[0]==='f'&&l[1]==='f')return {m:1.05,t:'Les dues últimes sessions t’han semblat fàcils. He pujat les càrregues un 5 %.'};
+  return {m:1,t:''};
+}
+function loadFor(e,P,mul){
+  if(!e.g.bw)return null;
+  var lvl=P.level==='principiant'?0.85:1;
+  var kg=P.weight*e.g.bw*lvl*GOALS[P.goal].load*mul;
+  return Math.max(2.5,Math.round(kg/2.5)*2.5);
+}
+/* Tria els exercicis que caben en 50 min (5 d'escalfament + 5 d'estiraments inclosos). */
+function build(P,pl,di,noCut){
+  var G=GOALS[P.goal],pr=prog(P,di),ov=pl.over||{},R=ov.r||G.r,sets0=ov.sets||G.sets,rest0=ov.rest||G.rest;
+  var cm=pl.cardio?pl.cardio.mins[goalIdx(P)]:0,budget=3000-600-cm*60,used=0,list=[];
+  for(var i=0;i<pl.ex.length;i++){
+    var e=pl.ex[i];if(pr.b%2===1&&e.alt)e=e.alt;
+    var s=Math.max(2,sets0+(pr.c===2&&i<3?1:0)-(pr.c===3&&!noCut?1:0));
+    var lo=R[0]+(pr.c===1?2:0),hi=R[1]+(pr.c===1?2:0),rn=(lo+hi)/2;
+    var tt=e.t?e.t+(pr.c===1?5:0):0,rest=e.t?30:rest0,secs=s*((tt||rn*3)+rest);
+    if(list.length>=4&&used+secs>budget)break;
+    list.push({e:e,i:list.length,sets:s,reps:lo===hi?''+lo:lo+'–'+hi,t:tt,rest:rest,secs:secs});used+=secs;
+  }
+  var min=Math.round((600+used+cm*60)/60);
+  if(pr.c===3&&!noCut&&min<40)return build(P,pl,di,true);
+  return {list:list,cm:cm,pr:pr,min:min};
+}
+function nextTrainingDate(P,from){
+  var d=parse(from);
+  for(var k=0;k<21;k++){d.setDate(d.getDate()+1);var di=iso(d);if(!dayInfo(P,di).rest&&!P.done[di])return di;}
+  return from;
+}
+function todayTarget(P){return (!dayInfo(P,TODAY).rest&&!P.done[TODAY])?TODAY:nextTrainingDate(P,TODAY);}
+function cardioSpec(P,pl,c){var cd=pl.cardio;return P.mode==='gym'?cd.g:(c.bmi>=30?cd.l:cd.h);}
+
 function viewCalendari(P){
   var y=UI.cy,m=UI.cm,first=new Date(y,m,1),off=(first.getDay()+6)%7,dim=new Date(y,m+1,0).getDate();
   var h=sampleNote(P);
+  var tg=todayTarget(P),ti=dayInfo(P,tg),tb=build(P,ti.plan,tg);
+  h+='<div class="card hero"><div class="eyebrow">Què toca '+(tg===TODAY?'avui':longDate(tg))+'?</div><h2>Dia '+ti.n+': '+ti.plan.title+'</h2><p style="margin:4px 0 10px">'+ti.plan.mus+'</p>';
+  h+='<div class="row" style="margin-bottom:12px"><span class="chip ac">≈ '+tb.min+' min</span><span class="chip">'+tb.list.length+' exercicis</span>'+(ti.plan.optional?'<span class="chip">Opcional</span>':'')+'</div>';
+  h+='<button class="btn" type="button" data-a="start" data-d="'+tg+'">Començar l’entrenament</button></div>';
   h+='<div class="card"><div class="cal-head"><button class="btn ghost sm" type="button" data-a="mon" data-d="-1" aria-label="Mes anterior">←</button><h2>'+MONTHS[m]+' '+y+'</h2><button class="btn ghost sm" type="button" data-a="mon" data-d="1" aria-label="Mes següent">→</button></div><div class="cal">';
   ['Dl','Dm','Dc','Dj','Dv','Ds','Dg'].forEach(function(n){h+='<div class="dn">'+n+'</div>';});
   for(var i=0;i<off;i++)h+='<div></div>';
@@ -809,12 +912,13 @@ function viewCalendari(P){
   }
   h+='</div><div class="legend"><span><i style="background:var(--a)"></i>'+esc(S.people[0].name)+' ha entrenat</span><span><i style="background:var(--b)"></i>'+esc(S.people[1].name)+' ha entrenat</span></div></div>';
   var si=dayInfo(P,UI.sel),sp=si.plan;
-  h+='<div class="card"><div class="eyebrow">'+longDate(UI.sel)+(si.rest?'':' · sessió '+si.n+' de 6')+'</div><h2>'+sp.title+'</h2>';
+  h+='<div class="card"><div class="eyebrow">'+longDate(UI.sel)+(si.rest?' · Dia 7':' · Dia '+si.n+' de la rutina')+'</div><h2>'+sp.title+'</h2>';
   if(sp.rest){
     h+='<p class="muted">'+sp.desc+'</p>';
   }else{
-    h+='<div class="row" style="margin:8px 0"><span class="chip ac">≈ '+totalMin(sp,P.goal)+' min d’entrenament</span><span class="chip">10 min d’estiraments</span><span class="chip">'+(P.mode==='gym'?'Gimnàs':'Casa')+'</span></div><ol class="list">';
-    exList(sp,P.goal).forEach(function(e){var v=P.mode==='gym'?e.g:e.h;h+='<li>'+esc(v.n)+'</li>';});
+    var sb=build(P,sp,UI.sel);
+    h+='<p style="margin:4px 0">'+sp.mus+'</p><div class="row" style="margin:8px 0"><span class="chip ac">≈ '+sb.min+' min en total</span><span class="chip">5 min escalfament</span><span class="chip">5 min estiraments</span><span class="chip">'+(P.mode==='gym'?'Gimnàs':'Casa')+'</span></div><ol class="list">';
+    sb.list.forEach(function(it){var v=P.mode==='gym'?it.e.g:it.e.h;h+='<li>'+esc(v.n)+'</li>';});
     h+='</ol>';
   }
   h+='<div style="margin-top:14px"><button class="btn" type="button" data-a="open">Obrir sessió</button></div></div>';
@@ -822,69 +926,75 @@ function viewCalendari(P){
   h+='<div class="card"><h3>Setmana '+weekLabel(si.mon)+'</h3><div class="week">';
   weekDates(si.mon).forEach(function(di){
     var wi=dayInfo(P,di),pl=wi.plan,dow=parse(di).getDay();
-    h+='<button type="button" class="r'+(pl.rest?' rest':'')+(di===UI.sel?' on':'')+'" data-a="sel" data-d="'+di+'"><b>'+DSHORT[dow]+'</b><span>'+pl.title+'</span><span class="muted small">'+(P.done[di]?'✓ feta':(pl.rest?'Descans':'≈ '+totalMin(pl,P.goal)+' + 10 min'))+'</span></button>';
+    h+='<button type="button" class="r'+(pl.rest?' rest':'')+(di===UI.sel?' on':'')+'" data-a="sel" data-d="'+di+'"><b>'+DSHORT[dow]+'</b><span>'+pl.title+'</span><span class="muted small">'+(P.done[di]?'✓ feta':(pl.rest?'Descans':'≈ '+build(P,pl,di).min+' min'))+'</span></button>';
   });
   h+='</div></div>';
   return h;
 }
-function strBlock(list){
-  var h='<div class="card"><div class="row sp"><h3>Estiraments</h3><span class="chip">10 min</span></div><div style="margin-top:6px">';
+function strBlock(list,title){
+  var tot=0;list.forEach(function(s){tot+=s[2]||60;});
+  var h='<div class="card"><div class="row sp"><h3>'+(title||'Estiraments')+'</h3><span class="chip">'+Math.max(1,Math.round(tot/60))+' min</span></div><div style="margin-top:6px">';
   list.forEach(function(s){
-    h+='<div class="srow"><div><div class="t">'+esc(s[0])+'</div><div class="hint">'+esc(s[1])+'</div></div><button class="btn ghost sm" type="button" data-a="tm" data-s="60" data-l="'+esc(s[0])+'">60 s</button></div>';
+    var sec=s[2]||60;
+    h+='<div class="srow"><div><div class="t">'+esc(s[0])+'</div><div class="hint">'+esc(s[1])+'</div></div><button class="btn ghost sm" type="button" data-a="tm" data-s="'+sec+'" data-l="'+esc(s[0])+'">'+sec+' s</button></div>';
   });
-  h+='<div class="srow"><div><div class="t">Respiració i relaxació</div><div class="hint">Tombat, respira lent pel nas</div></div><button class="btn ghost sm" type="button" data-a="tm" data-s="120" data-l="Respiració">2 min</button></div>';
   return h+'</div></div>';
 }
 function figBox(id,label){
   if(!id||!Figs.has(id))return '';
-  return '<div class="figbox">'+Figs.svg(id,{label:'Dibuix: '+label})+'<p class="figtip">'+esc(Figs.tip(id))+'</p></div>';
+  return '<div class="figbox">'+Figs.svg(id,{label:'Dibuix: '+label})+'<p class="figtip"><b>Tècnica:</b> '+esc(Figs.tip(id))+'</p>'+(ERRS[id]?'<p class="figtip"><b>Evita:</b> '+esc(ERRS[id])+'</p>':'')+'</div>';
 }
 function viewSessio(P){
-  var di=UI.sel,info=dayInfo(P,di),pl=info.plan,g=GOALS[P.goal],c=calc(P);
+  var di=UI.sel,info=dayInfo(P,di),pl=info.plan,c=calc(P);
   var h=sampleNote(P);
-  h+='<div class="card"><div class="eyebrow">'+longDate(di)+(info.rest?'':' · sessió '+info.n+' de 6')+'</div><h1 class="title">'+pl.title+'</h1>';
-  if(!pl.rest){
-    h+='<div class="row" style="margin:10px 0"><span class="chip ac">≈ '+totalMin(pl,P.goal)+' min</span><span class="chip">+ 10 min d’estiraments</span><span class="chip">'+g.label+'</span></div>';
-    h+='<div class="seg" role="group" aria-label="On entrenes"><button type="button" data-a="mode" data-m="gym" aria-pressed="'+(P.mode==='gym')+'">Gimnàs</button><button type="button" data-a="mode" data-m="home" aria-pressed="'+(P.mode==='home')+'">Casa</button></div>';
-  }
-  h+='</div>';
   if(pl.rest){
-    h+='<div class="card"><h3>Avui toca recuperar</h3><p>'+pl.desc+'</p><ul class="list"><li>Beu uns '+fmt(c.water)+' L d’aigua repartits durant el dia.</li><li>Dorm entre 7 i 9 hores.</li><li>Pots canviar el dia de descans de la setmana al Calendari.</li></ul></div>';
-    h+=strBlock(pl.str);
+    h+='<div class="card"><div class="eyebrow">'+longDate(di)+' · Dia 7</div><h1 class="title">'+pl.title+'</h1><p>'+pl.desc+'</p><ul class="list"><li>Beu uns '+fmt(c.water)+' L d’aigua repartits durant el dia.</li><li>Dorm entre 7 i 9 hores.</li><li>Pots canviar el dia de descans de la setmana al Calendari.</li></ul></div>';
+    h+=strBlock(pl.str,'Mobilitat');
     return h;
   }
+  var B=build(P,pl,di),pr=B.pr,fa=fatigue(P),mul=pr.loadMul*fa.m;
+  h+='<div class="card"><div class="eyebrow">'+longDate(di)+' · Dia '+info.n+' de la rutina</div><h1 class="title">'+pl.title+'</h1><p style="margin:4px 0 0"><b>Treballem:</b> '+pl.mus+'</p>';
+  h+='<div class="row" style="margin:10px 0"><span class="chip ac">≈ '+B.min+' min</span><span class="chip">5 min escalfament</span><span class="chip">5 min estiraments</span>'+(pl.optional?'<span class="chip">Opcional</span>':'')+'<span class="chip">'+GOALS[P.goal].label+'</span></div>';
+  h+='<div class="seg" role="group" aria-label="On entrenes"><button type="button" data-a="mode" data-m="gym" aria-pressed="'+(P.mode==='gym')+'">Gimnàs</button><button type="button" data-a="mode" data-m="home" aria-pressed="'+(P.mode==='home')+'">Casa</button></div></div>';
+  h+='<div class="note"><b>Setmana '+(pr.w+1)+': '+pr.label+'.</b> '+pr.txt+(fa.t?'<br>'+fa.t:'')+'</div>';
   var wu=[['Cardio suau',120,P.mode==='gym'?'Bici o cinta a ritme suau':'Marxa al lloc o jumping jacks suaus'],['Mobilitat articular',60,'Cercles de coll, espatlles, malucs i genolls'],['Mobilitat específica',60,pl.wu],['Sèrie d’aproximació',60,'Una sèrie lleugera (50 % de càrrega) del primer exercici']];
   h+='<div class="card"><div class="row sp"><h3>Escalfament</h3><span class="chip">5 min</span></div><div style="margin-top:6px">';
   wu.forEach(function(w){h+='<div class="srow"><div><div class="t">'+w[0]+'</div><div class="hint">'+w[2]+'</div></div><button class="btn ghost sm" type="button" data-a="tm" data-s="'+w[1]+'" data-l="'+esc(w[0])+'">'+(w[1]===120?'2 min':'1 min')+'</button></div>';});
   h+='</div></div>';
   var setsDay=(P.sets[di]=P.sets[di]||{});
-  exList(pl,P.goal).forEach(function(e,i){
-    var v=P.mode==='gym'?e.g:e.h,count=setsDay[i]||0,rest=e.t?30:g.rest,complete=count>=g.sets;
-    var load=P.mode==='gym'?loadFor(e,P):null;
-    h+='<div class="card ex'+(complete?' complete':'')+'"><div class="head"><div class="num">'+(i+1)+'</div><div><div class="name">'+esc(v.n)+'</div></div></div>';
-    h+=figBox(figId(v.n),v.n);
-    h+='<div class="row sp"><div class="sx">'+g.sets+' × '+(e.t?e.t+' s':g.reps)+'<small>descans '+rest+' s</small></div>';
-    if(e.t)h+='<button class="btn sm" type="button" data-a="tm" data-s="'+e.t+'" data-l="'+esc(v.n)+'">Iniciar '+e.t+' s</button>';
+  B.list.forEach(function(it,i){
+    var e=it.e,v=P.mode==='gym'?e.g:e.h,fid=P.mode==='gym'?e.fg:e.fh,count=setsDay[i]||0,complete=count>=it.sets;
+    var load=P.mode==='gym'?loadFor(e,P,mul):null;
+    h+='<div class="card ex'+(complete?' complete':'')+'"><div class="head"><div class="num">'+(i+1)+'</div><div><div class="name">'+esc(v.n)+'</div><div class="hint" style="margin-top:2px">'+esc(e.m||'')+'</div></div></div>';
+    h+=figBox(fid||figId(v.n),v.n);
+    h+='<div class="row sp"><div class="sx">'+it.sets+' × '+(it.t?it.t+' s':it.reps)+'<small>descans '+it.rest+' s</small></div>';
+    if(it.t)h+='<button class="btn sm" type="button" data-a="tm" data-s="'+it.t+'" data-l="'+esc(v.n)+'">Iniciar '+it.t+' s</button>';
     h+='</div>';
     if(load)h+='<div class="hint">Càrrega inicial <b>≈ '+fmt(load)+' kg'+(e.each?' per mà':'')+'</b>, calculada amb el teu pes. Ajusta-la perquè les últimes repeticions costin.</div>';
     if(P.mode==='home'&&e.easy&&P.level==='principiant')h+='<div class="hint">Si costa: '+esc(e.easy)+'</div>';
     h+='<div class="chips" role="group" aria-label="Sèries fetes">';
-    for(var s=1;s<=g.sets;s++)h+='<button class="setb" type="button" data-a="set" data-i="'+i+'" data-n="'+s+'" data-r="'+rest+'" aria-pressed="'+(count>=s)+'" aria-label="Sèrie '+s+'">'+s+'</button>';
+    for(var s=1;s<=it.sets;s++)h+='<button class="setb" type="button" data-a="set" data-i="'+i+'" data-n="'+s+'" data-tot="'+it.sets+'" data-r="'+it.rest+'" aria-pressed="'+(count>=s)+'" aria-label="Sèrie '+s+'">'+s+'</button>';
     h+='</div></div>';
   });
-  if(g.cardio>0){
-    var cd=pl.cardio,txt=P.mode==='gym'?cd.g:(c.bmi>=30?cd.hl:cd.h),cf=P.mode==='gym'?cd.gf:(c.bmi>=30?cd.lf:cd.hf);
-    var cc=setsDay[100]||0;
-    h+='<div class="card ex'+(cc?' complete':'')+'"><div class="row sp"><h3>Cardio final</h3><span class="chip">'+g.cardio+' min</span></div><div>'+esc(txt)+'</div>';
-    h+=figBox(cf,'Cardio');
+  if(B.cm>0){
+    var cs=cardioSpec(P,pl,c),cc=setsDay[100]||0;
+    h+='<div class="card ex'+(cc?' complete':'')+'"><div class="row sp"><h3>'+(pl.optional?'Circuit funcional':'Cardio')+'</h3><span class="chip">'+B.cm+' min</span></div><div>'+esc(cs.t)+'</div>';
+    h+=figBox(cs.f,'Cardio');
     if(P.mode==='home'&&c.bmi>=30)h+='<div class="hint">Hem triat una opció sense impacte per cuidar genolls i turmells.</div>';
-    h+='<div class="row"><button class="btn sm" type="button" data-a="tm" data-s="'+(g.cardio*60)+'" data-l="Cardio">Iniciar '+g.cardio+' min</button><button class="setb" type="button" data-a="set" data-i="100" data-n="1" data-r="0" aria-pressed="'+(cc>=1)+'" aria-label="Cardio fet">✓</button></div></div>';
+    h+='<div class="row"><button class="btn sm" type="button" data-a="tm" data-s="'+(B.cm*60)+'" data-l="Cardio">Iniciar '+B.cm+' min</button><button class="setb" type="button" data-a="set" data-i="100" data-n="1" data-tot="1" data-r="0" aria-pressed="'+(cc>=1)+'" aria-label="Cardio fet">✓</button></div></div>';
   }
-  h+=strBlock(pl.str);
-  var fut=di>TODAY,isDone=!!P.done[di];
-  h+='<div class="card"><button class="btn" style="width:100%" type="button" data-a="done"'+(fut?' disabled':'')+'>'+(isDone?'Sessió feta. Desmarcar':'Marcar sessió com a feta')+'</button>'+(fut?'<p class="hint" style="margin:8px 0 0">Es podrà marcar el dia de la sessió.</p>':'')+'</div>';
+  h+=strBlock(pl.str,'Estiraments');
+  var fut=di>TODAY,isDone=!!P.done[di],fb=P.fb[di];
+  h+='<div class="card"><button class="btn" style="width:100%" type="button" data-a="done"'+(fut?' disabled':'')+'>'+(isDone?'Sessió feta. Desmarcar':'Marcar sessió com a feta')+'</button>'+(fut?'<p class="hint" style="margin:8px 0 0">Es podrà marcar el dia de la sessió.</p>':'');
+  if(isDone){
+    h+='<div class="eyebrow" style="margin:14px 0 6px">Com t’ha anat?</div><div class="seg" role="group" aria-label="Esforç">';
+    [['f','Fàcil'],['b','Bé'],['d','Dur']].forEach(function(o){h+='<button type="button" data-a="fb" data-v="'+o[0]+'" aria-pressed="'+(fb===o[0])+'">'+o[1]+'</button>';});
+    h+='</div><p class="hint" style="margin:8px 0 0">Amb això ajusto les càrregues de les properes sessions.</p>';
+  }
+  h+='<div style="margin-top:12px"><button class="btn ghost" style="width:100%" type="button" data-a="next">Següent entrenament</button></div></div>';
   return h;
 }
+
 function qty(it,s){
   var b=it[1],u=it[2];
   if(u==='u'){return Math.max(1,Math.round(b*s))+' u';}
@@ -981,8 +1091,8 @@ function viewPerfil(P){
   h+=field('f_age','Edat','number',P.age,'inputmode="numeric" min="14" max="90"');
   h+=field('f_height','Alçada (cm)','number',P.height,'inputmode="numeric" min="120" max="230"');
   h+=field('f_weight','Pes (kg)','number',P.weight,'inputmode="decimal" step="0.1" min="30" max="250"');
-  h+='<div class="field"><label for="f_level">Nivell</label><select id="f_level" data-f="level"><option value="principiant"'+(P.level==='principiant'?' selected':'')+'>Principiant</option><option value="intermedi"'+(P.level==='intermedi'?' selected':'')+'>Intermedi</option></select></div>';
-  h+='<div class="field" style="grid-column:1/-1"><label for="f_restPref">Dia de descans habitual</label><select id="f_restPref" data-f="restPref"><option value="rota"'+(P.restPref==='rota'?' selected':'')+'>Variable (canvia cada setmana)</option>';
+  h+='<div class="field"><label for="f_level">Nivell</label><select id="f_level" data-f="level"><option value="principiant"'+(P.level==='principiant'?' selected':'')+'>Inicial</option><option value="intermedi"'+(P.level==='intermedi'?' selected':'')+'>Intermedi</option></select></div>';
+  h+='<div class="field"><label for="f_restPref">Dia de descans habitual</label><select id="f_restPref" data-f="restPref"><option value="rota"'+(P.restPref==='rota'?' selected':'')+'>Variable (canvia cada setmana)</option>';
   ORDER.forEach(function(wd){h+='<option value="'+wd+'"'+(String(P.restPref)===String(wd)?' selected':'')+'>Sempre: '+DAYS[wd]+'</option>';});
   h+='</select></div></div><p class="hint" style="margin:12px 0 0">IMC '+fmt(c.bmi)+'. Si hi ha molt pes a perdre, el cardio de casa passa a ser sense impacte. Cada setmana pots moure el descans des del Calendari.</p></div>';
   h+='<div class="card"><h3>Objectiu</h3><p class="hint" style="margin:4px 0 10px">Es pot canviar quan vulguis. Ajusta sèries, repeticions, descansos, calories i cardio.</p>'+goalSeg(P)+'</div>';
@@ -1019,11 +1129,14 @@ document.addEventListener('click',function(e){
   else if(a==='mon'){UI.cm+=+b.dataset.d;if(UI.cm<0){UI.cm=11;UI.cy--;}if(UI.cm>11){UI.cm=0;UI.cy++;}render();}
   else if(a==='sel'){UI.sel=b.dataset.d;render();}
   else if(a==='open'){location.hash='sessio';}
+  else if(a==='start'){UI.sel=b.dataset.d;if(location.hash==='#sessio'){render();window.scrollTo(0,0);}else location.hash='sessio';}
+  else if(a==='next'){UI.sel=nextTrainingDate(P,UI.sel);render();window.scrollTo(0,0);}
+  else if(a==='fb'){P.fb[UI.sel]=b.dataset.v;touch(ci);render();}
   else if(a==='mode'){P.mode=b.dataset.m;touch(ci);render();}
   else if(a==='tm'){tmSet(+b.dataset.s,b.dataset.l,true);}
   else if(a==='set'){
     var day=(P.sets[UI.sel]=P.sets[UI.sel]||{}),i=b.dataset.i,n=+b.dataset.n,cnt=day[i]||0;
-    var tot=i==='100'?1:GOALS[P.goal].sets;
+    var tot=+b.dataset.tot||1;
     if(cnt>=n){day[i]=n-1;}else{day[i]=n;if(n<tot&&+b.dataset.r>0)tmSet(+b.dataset.r,'Descans',true);}
     touch(ci);render();
   }
@@ -1068,5 +1181,6 @@ setView(location.hash.replace('#','')||'calendari',true);
 tmDraw();
 if(S.sync.code)syncNow();
 })();
+
 
 </script>
