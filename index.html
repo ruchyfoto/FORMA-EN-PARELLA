@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RouteaM">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>html:root{--dock-reserve:96px}iframe[src^='https://app.netlify.com']{display:none!important}</style>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -17,9 +18,10 @@
 <style>
 /* Layout: gimnàs de pissarra. Capçalera amb les dues persones, pestanyes enganxades a dalt, contingut en una columna, cronòmetre fix a baix. */
 :root{
+  --dock-reserve:max(16px,env(safe-area-inset-right,0px));
   --bg:#F2F6FF; --surface:#FFFFFF; --surface2:#E6EDFC; --fg:#141B34; --muted:#56607F; --line:#D3DCF2;
   --a:#2F5BFF; --a-soft:#DCE5FF; --b:#E5266F; --b-soft:#FFDCE9; --sun:#FFC93C; --prop:#BCC7E6;
-  --ink-on:#FFFFFF; --ok:#1E8A4C; --warn:#9A5B00; --warn-soft:#FFF0C2;
+  --ink-on:#FFFFFF; --hl:#F26B1D; --ok:#1E8A4C; --warn:#9A5B00; --warn-soft:#FFF0C2;
   --f-disp:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
   --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --ac:var(--a); --ac-soft:var(--a-soft);
@@ -28,13 +30,13 @@
   :root:not([data-theme="light"]){
     --bg:#0F1328; --surface:#181D3A; --surface2:#222850; --fg:#EEF1FF; --muted:#9AA4CE; --line:#2E3560;
     --a:#7D9BFF; --a-soft:#1E2B66; --b:#FF7FAF; --b-soft:#4A1A33; --sun:#FFC93C; --prop:#3A4278;
-    --ink-on:#0B0F26; --ok:#62C277; --warn:#FFD166; --warn-soft:#3A2F0E; color-scheme:dark;
+    --ink-on:#0B0F26; --hl:#FF9B5E; --ok:#62C277; --warn:#FFD166; --warn-soft:#3A2F0E; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0F1328; --surface:#181D3A; --surface2:#222850; --fg:#EEF1FF; --muted:#9AA4CE; --line:#2E3560;
   --a:#7D9BFF; --a-soft:#1E2B66; --b:#FF7FAF; --b-soft:#4A1A33; --sun:#FFC93C; --prop:#3A4278;
-  --ink-on:#0B0F26; --ok:#62C277; --warn:#FFD166; --warn-soft:#3A2F0E; color-scheme:dark;
+  --ink-on:#0B0F26; --hl:#FF9B5E; --ok:#62C277; --warn:#FFD166; --warn-soft:#3A2F0E; color-scheme:dark;
 }
 body[data-p="0"]{--ac:var(--a);--ac-soft:var(--a-soft)}
 body[data-p="1"]{--ac:var(--b);--ac-soft:var(--b-soft)}
@@ -151,7 +153,7 @@ svg.chart text{fill:var(--muted);font-family:var(--f-body);font-size:10px}
 /* cronòmetre */
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:2px solid var(--ac);
   padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
-  padding-right:max(16px,env(safe-area-inset-right,0px))}
+  padding-right:calc(var(--dock-reserve) + env(safe-area-inset-right,0px))}
 .dock.ring{animation:ring .5s 4}
 @keyframes ring{50%{background:var(--ac-soft)}}
 @media (prefers-reduced-motion:reduce){.dock.ring{animation:none;background:var(--ac-soft)}}
@@ -212,6 +214,22 @@ main{padding-block:14px}
 @media (min-width:700px){
   .cal button.d{aspect-ratio:1/0.8}
 }
+
+/* guia d'exercici */
+svg.fig text{font-family:var(--f-body);font-size:7px;fill:var(--muted);font-weight:600;letter-spacing:.04em}
+.figlegend{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:4px 0 2px;font-size:.78rem;color:var(--muted)}
+.figlegend .lg{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:-4px}
+.lg-hl{background:var(--hl)}.lg-gh{background:var(--fg);opacity:.25}
+.lg-ar{width:auto!important;height:auto!important;background:none;color:var(--ac);font-weight:700;margin-right:-6px!important}
+.gh{font-family:var(--f-disp);font-size:1.05rem;text-transform:uppercase;letter-spacing:.05em;margin:10px 0 4px;color:var(--ac)}
+.steps{margin:0;padding-left:1.4rem;display:flex;flex-direction:column;gap:6px}
+.steps li{padding-left:2px}
+.steps li::marker{font-family:var(--f-disp);font-weight:700;color:var(--ac)}
+.keytip{margin:10px 0 0;padding:9px 12px;border-radius:12px;background:var(--warn-soft);color:var(--fg);border-left:4px solid var(--sun)}
+.avoid{margin:8px 0 0;font-size:.92rem;color:var(--muted)}
+details.more{margin-top:8px;border-top:1px solid var(--line)}
+details.more summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:600;color:var(--ac)}
+details.more p{margin:0 0 8px;font-size:.92rem}
 </style>
 
 </head>
@@ -243,6 +261,9 @@ main{padding-block:14px}
 var Figs=(function(){
 'use strict';
 var GY=92,TORSO=30,TH=22,SH=22,UA=14,FA=14;
+var HLC={};
+function cl(part){return HLC[part]?'hl':'fg';}
+function pw(part,w){return HLC[part]?w+0.8:w;}
 function pol(a,l){var r=a*Math.PI/180;return [Math.cos(r)*l,Math.sin(r)*l];}
 function add(p,q){return [p[0]+q[0],p[1]+q[1]];}
 function r1(n){return Math.round(n*10)/10;}
@@ -280,19 +301,20 @@ function foot(a,fd,cls){var q=add(a,pol(fd==null?10:fd,7));return ln(a[0],a[1],q
 function side(f){
   var hp=f.hp,t=f.t==null?-90:f.t,sh=f.sh||add(hp,pol(t,TORSO));
   var ang=Math.atan2(sh[1]-hp[1],sh[0]-hp[0])*180/Math.PI;
-  var hd=f.hd||add(sh,pol(ang,11)),J={hp:hp,sh:sh},s='';
+  var hd=f.hd||add(sh,pol(ang,11)),J={hp:hp,sh:sh,hd:hd},s='';
   var el2,k2,k;
   s+=props({p:(f.p||[]).filter(function(q){return q[0]!=='cab'&&q[0]!=='plat';})},J);
   if(f.ft2){k2=ik(hp,f.ft2,TH,SH,f.kh2||f.kh);s+=pl([hp,k2.mid,k2.end],'muted',4)+foot(k2.end,f.fd2,'muted');}
   if(f.wr2){el2=ik(sh,f.wr2,UA,FA,f.eh2||f.eh||[-1,0.3]);s+=pl([sh,el2.mid,el2.end],'muted',4);}
-  s+=ln(hp[0],hp[1],sh[0],sh[1],'fg',5.4);
-  if(f.ft){k=ik(hp,f.ft,TH,SH,f.kh||[1,0]);J.ft=k.end;s+=pl([hp,k.mid,k.end],'fg')+foot(k.end,f.fd);}
-  if(f.wr){var e=ik(sh,f.wr,UA,FA,f.eh||[-1,0.3]);J.wr=e.end;s+=pl([sh,e.mid,e.end],'fg');
+  s+=ln(hp[0],hp[1],sh[0],sh[1],cl('torso'),pw('torso',5.4));
+  if(HLC.glutes)s+='<circle cx="'+r1(hp[0])+'" cy="'+r1(hp[1])+'" r="4.6" style="fill:var(--hl)"/>';
+  if(f.ft){k=ik(hp,f.ft,TH,SH,f.kh||[1,0]);J.ft=k.end;s+=pl([hp,k.mid,k.end],cl('legs'),pw('legs',4.6))+foot(k.end,f.fd,cl('legs'));}
+  if(f.wr){var e=ik(sh,f.wr,UA,FA,f.eh||[-1,0.3]);J.wr=e.end;s+=pl([sh,e.mid,e.end],cl('arms'),pw('arms',4.6));
     s+=props({p:(f.p||[]).filter(function(q){return q[0]==='cab';})},J);
     if(f.db)s+=weight(e.end,e.mid,f.db===2?'bar':f.db===3?'knob':'db');}
   s+=props({p:(f.p||[]).filter(function(q){return q[0]==='plat';})},J);
   s+=head(hd);
-  return s;
+  return {s:s,J:J};
 }
 function front(f){
   var hp=f.hp,sy=f.sy||0,sh=[hp[0],hp[1]-TORSO],s='';
@@ -301,13 +323,15 @@ function front(f){
   var W=f.wr||[[hp[0]-9,hp[1]-4],[hp[0]+9,hp[1]-4]],F=f.ft,k=f.kh||[[-1,0.2],[1,0.2]],e=f.eh||[[-1,0.4],[1,0.4]];
   var lg=[ik(hL,F[0],TH,SH,k[0]),ik(hR,F[1],TH,SH,k[1])];
   var ar=[ik(shL,W[0],UA,FA,e[0]),ik(shR,W[1],UA,FA,e[1])];
-  s+=pl([hL,lg[0].mid,lg[0].end],'fg')+pl([hR,lg[1].mid,lg[1].end],'fg');
-  s+=ln(hL[0],hL[1],hR[0],hR[1],'fg',5)+ln(sh[0],sh[1]-sy,hp[0],hp[1],'fg',6)+ln(shL[0],shL[1],shR[0],shR[1],'fg',5);
-  s+=pl([shL,ar[0].mid,ar[0].end],'fg')+pl([shR,ar[1].mid,ar[1].end],'fg');
+  s+=pl([hL,lg[0].mid,lg[0].end],cl('legs'),pw('legs',4.6))+pl([hR,lg[1].mid,lg[1].end],cl('legs'),pw('legs',4.6));
+  s+=ln(hL[0],hL[1],hR[0],hR[1],'fg',5)+ln(sh[0],sh[1]-sy,hp[0],hp[1],cl('torso'),pw('torso',6))+ln(shL[0],shL[1],shR[0],shR[1],'fg',5);
+  if(HLC.glutes)s+='<circle cx="'+r1(hp[0])+'" cy="'+r1(hp[1])+'" r="4.6" style="fill:var(--hl)"/>';
+  s+=pl([shL,ar[0].mid,ar[0].end],cl('arms'),pw('arms',4.6))+pl([shR,ar[1].mid,ar[1].end],cl('arms'),pw('arms',4.6));
   if(f.db){s+=weight(ar[0].end,ar[0].mid,'db')+weight(ar[1].end,ar[1].mid,'db');}
   if(f.dbc){var cx=(ar[0].end[0]+ar[1].end[0])/2,cy=(ar[0].end[1]+ar[1].end[1])/2;s+='<circle cx="'+r1(cx)+'" cy="'+r1(cy)+'" r="4.5" style="fill:var(--ac)"/>';}
-  s+=head([sh[0],sh[1]-sy-11]);
-  return s;
+  var hdp=[sh[0],sh[1]-sy-11];
+  s+=head(hdp);
+  return {s:s,J:{hp:hp,hd:hdp,wr:[(ar[0].end[0]+ar[1].end[0])/2,(ar[0].end[1]+ar[1].end[1])/2],ft:[(lg[0].end[0]+lg[1].end[0])/2,(lg[0].end[1]+lg[1].end[1])/2],sh:[sh[0],sh[1]-sy]}};
 }
 
 /* ---- Patrons ---- */
@@ -463,18 +487,62 @@ P.rower={tip:'Primer les cames, després l’esquena i al final els braços. Tor
 P.adduct={v:'f',tip:'Tanca les cames amb control i obre lentament.',f:[P.abduct.f[1],P.abduct.f[0]]};
 P.jump=P.jack;
 
-function frameSvg(f,front_){return front_?front(f):side(f);}
+P.pullup={tip:'Penja’t amb els braços estirats i puja fins que la barbeta passi la barra. Baixa lent, sense balancejar-te.',f:[
+ {hp:[60,50],t:-90,ft:[58,86],kh:[-1,0.2],wr:[60,-10],eh:[1,0],p:[['ln',36,-10,84,-10,'prop',5]]},
+ {hp:[60,32],t:-90,ft:[58,68],kh:[-1,0.2],wr:[60,-10],eh:[1,0],p:[['ln',36,-10,84,-10,'prop',5]]}]};
+P.hang={tip:'Penja’t de la barra amb els braços estirats i les espatlles actives, sense encongir-les cap a les orelles.',f:[
+ {hp:[60,50],t:-90,ft:[58,86],kh:[-1,0.2],wr:[60,-10],eh:[1,0],p:[['ln',36,-10,84,-10,'prop',5]]}]};
+P.rowinv={tip:'Cos recte com una taula. Porta el pit cap a la barra i baixa lent. Comprova que la barra o la taula aguanta el teu pes.',f:[
+ {hp:[80,70],t:200,ft:[116,90],kh:[0,-1],wr:[50,32],eh:[1,0],p:[['ln',38,32,62,32,'prop',5],['ln',38,32,38,92,'prop',3],['ln',62,32,62,92,'prop',3]]},
+ {hp:[80,60],t:208,ft:[116,90],kh:[0,-1],wr:[50,32],eh:[1,0.4],p:[['ln',38,32,62,32,'prop',5],['ln',38,32,38,92,'prop',3],['ln',62,32,62,92,'prop',3]]}]};
+P.wallsit={tip:'Esquena enganxada a la paret, cuixes paral·leles a terra i genolls sobre els turmells. Aguanta el temps marcat.',f:[
+ {hp:[40,64],t:-90,ft:[62,92],kh:[1,-0.3],wr:[56,62],eh:[0,1],p:[['ln',30,-10,30,92,'prop',4]]}]};
+P.goodmorning={tip:'Porta els malucs enrere amb l’esquena plana i els braços a la nuca. Torna amunt empenyent el terra amb el peu.',f:[
+ {hp:[60,48],t:-90,ft:[60,92],ft2:[56,92],wr:[64,8],eh:[1,0.5]},
+ {hp:[46,52],t:-20,ft:[60,92],ft2:[22,62],kh2:[-1,0.2],wr:[80,30],eh:[0,-1]}]};
+function nodb(id,nid,tip){var q=P[id];P[nid]={v:q.v,tip:tip||q.tip,f:q.f.map(function(f){var g={};for(var k in f)if(k!=='db'&&k!=='dbc')g[k]=f[k];return g;})};}
+nodb('reardelt','reardelt0','Tronc inclinat amb l’esquena recta. Obre els braços cap als costats i apropa els omòplats, sense pes.');
+nodb('shrug','shrug0','Puja les espatlles cap a les orelles, pausa de 3 s i baixa lent. No fa falta pes.');
+nodb('curl','curl0','Posa una tovallola sota el peu i estira-la amb les mans com si fessis un curl, sense deixar que s’alci.');
+
+var HL={squat:['legs','glutes'],legpress:['legs','glutes'],bulgarian:['legs','glutes'],lunge:['legs','glutes'],legext:['legs'],bridge:['glutes'],bridge1:['glutes'],hipthrust:['glutes'],calf:['legs'],revcrunch:['torso'],bicycle:['torso'],crunch:['torso'],bench:['arms','torso'],incline:['arms','torso'],pushup:['arms','torso'],pushup_decline:['arms','torso'],pike:['arms'],ohp:['arms'],pushdown:['arms'],dips:['arms'],skull:['arms'],fly:['arms','torso'],latraise:['arms'],frontraise:['arms'],shrug:['arms'],shrug0:['arms'],pulldown:['arms','torso'],row_seated:['arms','torso'],row_bent:['arms','torso'],rowinv:['arms','torso'],facepull:['arms'],superman:['torso'],birddog:['torso','glutes'],backext:['torso'],curl:['arms'],curl0:['arms'],deadbug:['torso'],plank:['torso'],sideplank:['torso'],climber:['torso','legs'],russian:['torso'],legcurl:['legs'],bridge_curl:['legs','glutes'],rdl:['legs','glutes'],goodmorning:['legs','glutes'],kickback:['glutes'],sumo:['legs','glutes'],abduct:['glutes'],adduct:['legs'],run:['legs'],jack:['legs','arms'],jump:['legs','arms'],bike:['legs'],rower:['legs','arms','torso'],reardelt:['arms'],reardelt0:['arms'],pullup:['arms','torso'],hang:['arms'],wallsit:['legs']};
+function render(f,front_){return front_?front(f):side(f);}
+function arrow(a,b,cls){
+  var dx=b[0]-a[0],dy=b[1]-a[1],d=Math.sqrt(dx*dx+dy*dy);if(d<9)return '';
+  var ux=dx/d,uy=dy/d,e=[b[0]-ux*2,b[1]-uy*2],hs=5;
+  var l=[e[0]-ux*hs-uy*hs*0.6,e[1]-uy*hs+ux*hs*0.6],r=[e[0]-ux*hs+uy*hs*0.6,e[1]-uy*hs-ux*hs*0.6];
+  return '<line x1="'+r1(a[0])+'" y1="'+r1(a[1])+'" x2="'+r1(e[0])+'" y2="'+r1(e[1])+'" stroke-dasharray="3 3" stroke-linecap="round" style="stroke:var(--'+cls+')" stroke-width="2"/>'
+   +'<polygon points="'+r1(e[0])+','+r1(e[1])+' '+r1(l[0])+','+r1(l[1])+' '+r1(r[0])+','+r1(r[1])+'" style="fill:var(--'+cls+')"/>';
+}
+function mainMove(J0,J1){
+  var best=null,bd=0,keys=['wr','ft','hp','sh','hd'];
+  for(var i=0;i<keys.length;i++){var k=keys[i];if(!J0[k]||!J1[k])continue;
+    var d=Math.hypot(J1[k][0]-J0[k][0],J1[k][1]-J0[k][1])*({wr:1.25,hp:1.15,sh:1,hd:0.9,ft:0.65}[k]);if(d>bd){bd=d;best=k;}}
+  return best&&bd>=11?[J0[best],J1[best]]:null;
+}
+function label(x,t){return '<text x="'+x+'" y="107" text-anchor="middle" font-size="7.5" font-weight="700" letter-spacing=".8" style="fill:var(--muted)">'+t+'</text>';}
 function svg(id,opt){
   var p=P[id];if(!p)return '';
-  var n=p.f.length,w=n===1?120:250,x0=n===1?0:0,out='<svg class="fig'+(n===1?' one':'')+'" viewBox="'+(n===1?'0':'0')+' -14 '+w+' 114" role="img" aria-label="'+(opt&&opt.label?opt.label:'Exercici')+'">';
+  HLC={};(HL[id]||[]).forEach(function(k){HLC[k]=1;});
+  var n=p.f.length,w=n===1?120:250,fr=p.v==='f';
+  var R=p.f.map(function(f){return render(f,fr);});
+  var out='<svg class="fig'+(n===1?' one':'')+'" viewBox="0 -14 '+w+' 128" role="img" aria-label="'+(opt&&opt.label?opt.label:'Exercici')+'">';
   out+='<line x1="4" x2="'+(w-4)+'" y1="'+(GY+2)+'" y2="'+(GY+2)+'" style="stroke:var(--line)" stroke-width="2" stroke-linecap="round"/>';
-  p.f.forEach(function(f,i){out+='<g transform="translate('+(i*130)+',0)">'+frameSvg(f,p.v==='f')+'</g>';});
+  R.forEach(function(r,i){
+    out+='<g transform="translate('+(i*130)+',0)">';
+    if(i===1)out+='<g opacity=".2">'+R[0].s+'</g>';
+    out+=r.s;
+    if(i===1){var mv=mainMove(R[0].J,r.J);if(mv)out+=arrow(mv[0],mv[1],'ac');}
+    out+='</g>';
+  });
+  if(n===2){out+=label(60,'INICI')+label(190,'FINAL');}else{out+=label(60,'POSICIÓ');}
   if(n===2)out+='<path d="M117 40 L133 40 M128 35 L134 40 L128 45" fill="none" style="stroke:var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
   return out+'</svg>';
 }
-return {svg:svg,has:function(id){return !!P[id];},tip:function(id){return P[id]?P[id].tip:'';},frames:function(id){return P[id]?P[id].f.length:0;},ids:Object.keys(P)};
+return {svg:svg,two:function(id){return !!P[id]&&P[id].f.length===2;},has:function(id){return !!P[id];},tip:function(id){return P[id]?P[id].tip:'';},frames:function(id){return P[id]?P[id].f.length:0;},ids:Object.keys(P)};
 })();
 if(typeof module!=='undefined')module.exports=Figs;
+
 
 (function(){
 'use strict';
@@ -1008,9 +1076,80 @@ function strBlock(list,title){
   });
   return h+'</div></div>';
 }
+/* Guia pas a pas per dibuix: g(id, passos, respiració, consell, errors, més fàcil, més difícil) */
+var GUIDE={};
+function g(id,steps,resp,tip,err,easy,hard){GUIDE[id]={steps:steps,resp:resp,tip:tip,err:err,easy:easy,hard:hard};}
+g('squat',['Peus a l’amplada de les espatlles i punxes lleugerament cap enfora.','Porta els malucs enrere i avall, com si seguessis en una cadira, amb el pit alt.','Baixa fins que les cuixes quedin paral·leles a terra i puja empenyent amb tot el peu.'],'Inspira en baixar i expira en pujar.','Empeny el terra cap als costats amb els peus: així els genolls no cauen cap a dins.',['Genolls cap a dins','Talons que s’aixequen','Esquena arrodonida al fons'],'Seu i aixeca’t d’una cadira.','Baixa en 4 s o fes una pausa de 2 s a baix.');
+g('legpress',['Esquena i cul ben enganxats al respatller, peus a l’amplada de les espatlles.','Baixa la plataforma fins que els genolls arribin a uns 90°, sense que els malucs s’aixequin.','Empeny amb tot el peu fins estirar les cames, sense bloquejar els genolls.'],'Inspira en baixar i expira en empènyer.','Els genolls segueixen la direcció dels peus durant tot el recorregut.',['Aixecar el cul del seient','Bloquejar els genolls a dalt','Baixar massa poc'],'Redueix el pes i el recorregut.','Baixa en 4 s i puja en 1 s, o fes-ho a una cama.');
+g('bulgarian',['Posa el peu de darrere sobre un banc o sofà, a uns dos passos del suport.','Baixa el genoll de darrere cap a terra amb el tronc recte i el pit alt.','Empeny amb el taló del peu de davant per tornar amunt.'],'Inspira en baixar i expira en pujar.','Allunya el peu de davant fins que la canyella quedi vertical a baix: així el genoll no se’n va endavant.',['Peu de davant massa a prop','Tronc inclinat endavant','Genoll cap a dins'],'Fes una gambada estàtica sense recolzar el peu.','Baixa en 4 s o afegeix una pausa de 2 s a baix.');
+g('lunge',['Dret, fes un pas llarg endavant (o enrere) amb el tronc recte.','Baixa fins que els dos genolls formin uns 90° i el de darrere gairebé toqui el terra.','Empeny amb el peu de davant per tornar a la posició inicial.'],'Inspira en baixar i expira en pujar.','Imagina que baixes en vertical, com dins d’un ascensor.',['Genoll del davant cap a dins','Passos massa curts','Tronc inclinat endavant'],'Fes la gambada estàtica, sense caminar.','Afegeix una pausa de 2 s a baix.');
+g('legext',['Seu a la màquina amb l’esquena ben enganxada i el coixinet sobre els turmells.','Estira les cames fins quasi bloquejar els genolls i contreu el quàdriceps 1 s.','Baixa lent (3 s) fins als 90°.'],'Expira en estirar i inspira en baixar.','Controla la baixada: és la part que més fa créixer el múscul.',['Estirar de cop i bloquejar els genolls','Aixecar els malucs del seient','Agafar impuls balancejant-te'],'Redueix el pes i el recorregut.','Fes-ho a una cama o amb pausa de 2 s a dalt.');
+g('bridge',['Tombat de cara amunt, genolls doblegats i peus plans a prop dels glutis.','Prem els talons i puja els malucs fins que genolls, malucs i espatlles quedin en línia.','Contreu els glutis 1 s a dalt i baixa lent.'],'Expira en pujar i inspira en baixar.','Imagina que vols arrugar una moneda entre els glutis a dalt.',['Arquejar la lumbar','Empènyer amb la punta dels peus','Obrir els genolls'],'Fes menys recorregut, sense pausa.','Passa al pont a una cama o fes una pausa de 3 s a dalt.');
+g('bridge1',['Tombat de cara amunt, un peu pla a terra i l’altra cama estesa a l’aire.','Prem el taló de la cama de suport i puja els malucs ben alineats.','Baixa lent sense deixar caure el maluc de la cama estesa.'],'Expira en pujar.','Mantén els dos malucs a la mateixa altura, com si tinguessis un got d’aigua a cada costat.',['Girar els malucs','Arquejar la lumbar','Fer-ho massa ràpid'],'Pont amb les dues cames.','Pausa de 3 s a dalt.');
+g('hipthrust',['Omòplats recolzats al banc, peus plans i barra (o el pes del cos) sobre els malucs.','Prem els talons i estira els malucs fins alinear tronc i cuixes.','Contreu els glutis 1 s a dalt, amb la barbeta cap al pit, i baixa lent.'],'Expira en pujar i inspira en baixar.','A dalt, les canyelles han de quedar verticals: ajusta la distància dels peus.',['Hiperextensió lumbar a dalt','Empènyer amb la punta dels peus','Mirar el sostre'],'Pont de glutis a terra.','A una cama o amb pausa de 3 s a dalt.');
+g('calf',['Dret, amb la punta dels peus a la vora d’un escaló (o plans a terra).','Puja sobre la punta dels peus tant com puguis i pausa 1-2 s a dalt.','Baixa lent fins notar l’estirament als bessons.'],'Expira en pujar i inspira en baixar.','Fes tot el recorregut: baixa del tot i puja del tot.',['Rebotar sense control','No baixar prou','Doblegar els genolls'],'Amb dues cames i una mà a la paret.','A una cama o amb pausa de 3 s a dalt.');
+g('revcrunch',['Tombat de cara amunt, mans al costat o sota els glutis i cames doblegades.','Porta els genolls cap al pit aixecant els malucs uns centímetres amb l’abdomen.','Baixa lent sense deixar caure els peus.'],'Expira en pujar els genolls.','Pensa a enrotllar la pelvis cap al melic, no a llançar les cames.',['Agafar impuls amb les cames','Arquejar la lumbar a baix'],'Aixeca només un genoll cada cop.','Estira les cames mentre baixes, sense tocar terra.');
+g('bicycle',['Tombat de cara amunt, mans suaus darrere el cap i cames elevades.','Porta el colze cap al genoll contrari girant el tronc mentre estires l’altra cama.','Canvia de costat lent i controlat.'],'Expira a cada gir.','Gira des de les costelles, no tirant del coll.',['Estirar del coll amb les mans','Anar massa ràpid','Lumbar separada del terra'],'Deixa els peus a terra i fes només el gir del tronc.','Fes-ho més lent amb 1 s de pausa a cada costat.');
+g('crunch',['Tombat de cara amunt, genolls doblegats i mans creuades al pit.','Aixeca només les espatlles de terra contraient l’abdomen.','Baixa lent sense reposar del tot el cap.'],'Expira en pujar.','Mira el sostre: la barbeta no s’acosta al pit.',['Estirar del coll','Aixecar tota l’esquena'],'Fes un recorregut curt.','Mans darrere el cap i pausa de 2 s a dalt.');
+g('bench',['Tomba’t al banc amb els peus plans i les omòplats ajuntades i baixades.','Baixa els pesos a l’altura del pit amb els colzes a uns 45° del cos.','Empeny cap amunt fins estirar els braços, sense bloquejar.'],'Inspira en baixar i expira en empènyer.','Mantén les omòplats enganxades al banc tot el temps.',['Obrir els colzes a 90°','Arquejar molt l’esquena','Rebotar al pit'],'Redueix el pes i baixa lent.','Baixa en 3 s i fes pausa d’1 s al pit.');
+g('incline',['Banc inclinat uns 30°, omòplats ajuntades i peus ben plantats.','Baixa els pesos a la part alta del pit amb els colzes a 45°.','Empeny cap amunt estirant els braços.'],'Inspira en baixar i expira en empènyer.','No passis dels 30-40° d’inclinació o l’espatlla farà tota la feina.',['Banc massa inclinat','Rebotar al pit','Colzes massa oberts'],'Fes-ho en banc pla amb menys pes.','Baixa en 3 s i pausa d’1 s.');
+g('pushup',['Mans una mica més amples que les espatlles i cos recte de cap a peus.','Baixa el pit cap a terra amb els colzes a uns 45°, sense deixar caure els malucs.','Empeny el terra fins estirar els braços.'],'Inspira en baixar i expira en pujar.','Contreu glutis i abdomen com en una planxa: el cos es mou en bloc.',['Malucs caiguts o cul alt','Colzes oberts','No baixar prou'],'Genolls a terra o mans sobre una taula.','Baixa en 4 s o fes una pausa de 2 s a baix.');
+g('pushup_decline',['Peus sobre una cadira o un banc i mans a terra, una mica més amples que les espatlles.','Baixa el pit cap a terra amb el cos recte.','Empeny fins estirar els braços.'],'Inspira en baixar i expira en pujar.','Com més alts els peus, més treballa la part alta del pit i l’espatlla.',['Deixar caure la lumbar','Encongir el coll'],'Flexions normals amb els peus a terra.','Peus més alts o pausa de 2 s a baix.');
+g('pike',['Posa’t en V invertida: mans a terra, malucs ben alts i cames quasi estirades.','Doblega els colzes portant el cap cap a terra, entre les mans.','Empeny cap amunt fins tornar a la V.'],'Inspira en baixar i expira en empènyer.','Com més verticals els braços i més alts els malucs, més treballa l’espatlla.',['Baixar només amb l’esquena','Moure els peus cap endavant'],'Recorregut curt i peus més separats.','Eleva els peus sobre una cadira.');
+g('ohp',['Dret o assegut, amb els pesos a l’altura de les orelles i els colzes lleugerament davant.','Empeny cap amunt fins estirar els braços sobre el cap.','Baixa controlat fins a l’altura de les orelles.'],'Expira en empènyer.','Contreu l’abdomen per no arquejar la lumbar.',['Arquejar la lumbar','Empènyer amb les cames','Baixar massa poc'],'Pes lleuger i assegut amb suport a l’esquena.','Baixa en 3 s o fes-ho amb un sol braç.');
+g('pushdown',['Dret davant de la politja, amb els colzes enganxats als costats.','Estira els braços cap avall fins a bloquejar-los suaument.','Torna lent fins que els avantbraços quedin a 90°.'],'Expira en estirar.','Només es mouen els avantbraços; els colzes no es mouen.',['Moure els colzes','Inclinar-se sobre la politja'],'Redueix el pes.','Baixa en 3 s o passa a una mà.');
+g('dips',['Mans a la vora d’un banc o una cadira, malucs endavant i peus a terra.','Doblega els colzes cap enrere fins a uns 90°.','Empeny cap amunt estirant els braços.'],'Inspira en baixar i expira en pujar.','Mantén l’esquena molt a prop del banc i les espatlles baixes.',['Baixar massa (castiga l’espatlla)','Obrir els colzes','Encongir el coll'],'Doblega els genolls i apropa els peus.','Estira les cames o aixeca’n una.');
+g('skull',['Tombat al banc amb els pesos sobre el pit i els braços estirats.','Doblega els colzes portant els pesos cap al front, sense moure els braços.','Estira els braços fins tornar a dalt.'],'Inspira en baixar i expira en estirar.','Els colzes apunten sempre al sostre i no s’obren.',['Obrir els colzes','Deixar caure el pes al front'],'Pes lleuger o una manuella amb les dues mans.','Baixa en 3 s.');
+g('fly',['Braços oberts amb els colzes lleugerament doblegats, a l’altura del pit.','Porta els braços cap al centre dibuixant un arc i prement el pit.','Torna lent fins sentir l’estirament del pit.'],'Expira en tancar i inspira en obrir.','Imagina que abraces un arbre gran.',['Bloquejar els colzes','Anar massa enrere amb els braços'],'Redueix el pes o el recorregut.','Pausa de 2 s al centre.');
+g('latraise',['Dret, amb els pesos als costats i els colzes lleugerament doblegats.','Aixeca els braços als costats fins a l’altura de les espatlles.','Baixa lent en 3 s.'],'Expira en pujar.','Lidera el moviment amb els colzes, no amb les mans.',['Pujar per sobre de les espatlles','Balancejar el cos','Posar massa pes'],'Pes lleuger o només el pes dels braços.','Pausa de 2 s a dalt.');
+g('frontraise',['Dret, amb els pesos davant de les cuixes.','Aixeca els braços endavant fins a l’altura de les espatlles.','Baixa lent.'],'Expira en pujar.','Tronc quiet i abdomen contret.',['Balancejar el tronc','Pujar per sobre de les espatlles'],'Pes lleuger.','Alterna els braços lentament.');
+g('shrug',['Dret, amb els braços estirats i els pesos als costats.','Puja les espatlles cap a les orelles tant com puguis.','Pausa 1 s a dalt i baixa lent.'],'Expira en pujar.','Puja recte, sense fer cercles.',['Fer cercles amb les espatlles','Flexionar els colzes'],'Pes lleuger.','Pausa de 3 s a dalt.');
+g('shrug0',['Dret, amb els braços estirats als costats.','Puja les espatlles cap a les orelles tant com puguis.','Pausa de 3 s a dalt i baixa lent.'],'Expira en pujar.','Puja recte, sense fer cercles.',['Fer cercles amb les espatlles','Flexionar els colzes'],'Pausa d’1 s.','Pausa de 5 s i baixada en 3 s.');
+g('pulldown',['Seu amb els genolls fixos sota el coixinet i agafa la barra una mica més ample que les espatlles.','Tira la barra cap a la part alta del pit portant els colzes avall i enrere.','Torna lent fins estirar els braços.'],'Expira en tirar.','Pensa a posar els colzes a les butxaques de darrere.',['Tirar la barra darrere el coll','Balancejar l’esquena','Tirar només amb els braços'],'Redueix el pes o agafa la barra més estreta.','Pausa de 2 s amb la barra al pit.');
+g('row_seated',['Seu amb el pit alt, genolls lleugerament doblegats i els braços estirats.','Porta les mans al melic ajuntant els omòplats.','Torna lent estirant els braços sense arrodonir l’esquena.'],'Expira en tirar.','Imagina que vols prémer un llapis entre els omòplats.',['Arrodonir l’esquena','Tirar només amb els braços'],'Pes lleuger.','Pausa de 2 s amb els omòplats ajuntats.');
+g('row_bent',['Genolls lleugerament doblegats i tronc inclinat uns 45° amb l’esquena plana.','Porta el pes cap als malucs, estirant els colzes enrere.','Baixa lent fins estirar els braços.'],'Expira en tirar.','Mira el terra, a un metre davant teu, per mantenir el coll alineat.',['Esquena arrodonida','Impuls amb el tronc'],'Pes lleuger.','Pausa d’1 s amb els omòplats ajuntats.');
+g('facepull',['Politja a l’altura del cap: agafa la corda i fes un pas enrere.','Tira cap a la cara obrint els colzes a banda i banda.','Torna lent.'],'Expira en tirar.','Les mans acaben a l’altura de les orelles.',['Posar massa pes','Tirar amb la lumbar'],'Pes lleuger.','Pausa de 2 s.');
+g('superman',['Boca avall, amb els braços estirats davant i les cames estirades.','Aixeca alhora braços, pit i cames uns centímetres.','Aguanta 2 s i baixa lent.'],'Respira normal; expira en pujar.','Mira el terra perquè el coll quedi alineat.',['Aixecar molt el coll','Arquejar de més la lumbar'],'Aixeca només braços o només cames.','Aguanta 4 s a dalt.');
+g('birddog',['A quatre grapes, amb els canells sota les espatlles i els genolls sota els malucs.','Estira un braç endavant i la cama contrària enrere fins alinear-los amb el cos.','Torna i canvia de costat.'],'Expira en estirar.','Imagina un got d’aigua a la lumbar sense que es vessi.',['Girar els malucs','Aixecar la cama massa amunt'],'Estira només un braç o una cama.','Pausa de 3 s o apropa colze i genoll sota el cos.');
+g('backext',['Al banc romà amb els malucs recolzats i el cos alineat.','Baixa una mica el tronc amb l’esquena plana.','Puja fins alinear el cos, sense passar-te.'],'Expira en pujar.','Contreu els glutis per protegir la lumbar.',['Passar-te de l’horitzontal','Arquejar-te'],'Braços als costats.','Braços creuats al pit amb pausa.');
+g('curl',['Dret, amb els pesos als costats i els palmells cap endavant.','Doblega els colzes portant els pesos cap a les espatlles sense moure els colzes.','Baixa lent en 3 s.'],'Expira en pujar.','Imagina que tens els colzes clavats als costats.',['Balancejar el cos','Avançar els colzes'],'Pes lleuger i assegut.','Baixa en 4 s.');
+g('curl0',['Posa una tovallola sota el peu i agafa’n els extrems amb les mans.','Estira cap amunt com en un curl, mentre el peu fa pressió cap avall.','Aguanta 5 s i relaxa lent.'],'Respira amb normalitat.','Com més pressió fas amb el peu, més costa.',['Deixar que el peu s’alci','Balancejar el cos'],'Pressió suau.','Pressió màxima durant 8 s.');
+g('deadbug',['Tombat de cara amunt, braços amunt i genolls a 90° sobre els malucs.','Baixa lent un braç i la cama contrària sense que la lumbar se separi del terra.','Torna i canvia de costat.'],'Expira mentre estires.','Prem la lumbar contra el terra durant tot el moviment.',['La lumbar se separa del terra','Anar massa ràpid'],'Mou només els braços o només les cames.','Afegeix un pes lleuger a les mans.');
+g('plank',['Avantbraços a terra amb els colzes sota les espatlles.','Aixeca el cos formant una línia recta de cap a peus.','Contreu abdomen i glutis i aguanta el temps marcat.'],'Respira lent, sense aguantar l’aire.','Imagina que t’estiren des del cap i des dels talons.',['Malucs caiguts','Cul alt','Aguantar la respiració'],'Genolls a terra.','Aixeca un peu o allarga el temps.');
+g('sideplank',['De costat, amb l’avantbraç a terra i el colze sota l’espatlla.','Aixeca els malucs formant una línia recta.','Aguanta el temps marcat i canvia de costat.'],'Respira lent.','Mantén espatlles i malucs a la mateixa línia.',['Deixar caure el maluc','Girar el cos cap endavant'],'Genoll inferior a terra.','Aixeca la cama de dalt.');
+g('climber',['Posició de flexió amb les mans sota les espatlles i el cos recte.','Porta un genoll cap al pit i torna enrere.','Alterna cames amb un ritme controlat.'],'Respira de manera constant.','Els malucs es mantenen baixos, a l’altura de les espatlles.',['Cul alt','Mans massa endavant','Anar tan ràpid que perds el control'],'Fes-ho lent o amb les mans elevades.','Més ritme o 1 s de pausa a cada genoll.');
+g('russian',['Assegut, amb el tronc inclinat enrere i els peus a terra (o elevats).','Gira el tronc cap a un costat portant les mans a terra.','Torna al centre i gira cap a l’altre costat.'],'Expira a cada gir.','Gira les costelles, no només els braços.',['Arrodonir l’esquena','Girar només els braços'],'Peus a terra.','Peus elevats.');
+g('legcurl',['Tomba’t boca avall amb el coixinet sobre els turmells.','Porta els talons cap als glutis.','Baixa lent en 3 s.'],'Expira en doblegar.','Mantén els malucs ben pegats al banc.',['Aixecar els malucs del banc','Rebotar'],'Pes lleuger.','Baixa en 4 s.');
+g('bridge_curl',['Tombat de cara amunt, amb els talons sobre una tovallola o terra lliscant i els malucs aixecats.','Llisca els talons cap als glutis doblegant els genolls.','Estira les cames lentament.'],'Expira en doblegar.','Els malucs no baixen en cap moment.',['Deixar caure els malucs','Anar massa ràpid'],'Fes-ho amb els malucs a terra.','Fes-ho a una cama.');
+g('rdl',['Dret, amb els peus a l’amplada dels malucs i els genolls lleugerament doblegats.','Porta els malucs enrere amb l’esquena plana mentre el pes llisca per les cames.','Torna amunt empenyent amb els glutis.'],'Inspira en baixar i expira en pujar.','Imagina que tanques una porta amb el cul enrere.',['Arrodonir l’esquena','Doblegar massa els genolls'],'Pes lleuger o sense pes.','Fes-ho a una cama.');
+g('goodmorning',['Dret, amb els peus a l’amplada dels malucs i les mans a la nuca.','Porta els malucs enrere amb l’esquena plana, inclinant el tronc endavant.','Torna amunt empenyent el terra amb el peu.'],'Inspira en baixar i expira en pujar.','Imagina que tanques una porta amb el cul enrere.',['Arrodonir l’esquena','Doblegar massa els genolls'],'Fes-ho amb les dues cames.','Fes-ho a una cama.');
+g('kickback',['A quatre grapes (o amb la politja al turmell) amb l’esquena plana.','Porta una cama enrere i amunt prement el gluti.','Baixa controlat sense tocar terra.'],'Expira en pujar.','El moviment surt del maluc, no de la lumbar.',['Arquejar la lumbar','Girar els malucs'],'Redueix el recorregut.','Pausa de 2 s a dalt.');
+g('sumo',['Peus més amples que les espatlles i punxes cap enfora.','Baixa recte entre les cames mantenint el pit alt.','Puja empenyent el terra i contreu els glutis a dalt.'],'Inspira en baixar i expira en pujar.','Els genolls apunten sempre cap on apunten els peus.',['Genolls cap a dins','Tronc inclinat endavant'],'Baixa menys.','Pausa de 2 s a baix.');
+g('abduct',['Seu a la màquina (o tomba’t de costat) amb el cos estable.','Obre les cames cap enfora de manera controlada.','Torna lent sense deixar caure.'],'Expira en obrir.','Treballa el gluti mitjà: cos quiet i moviment lent.',['Fer-ho amb impuls','Ajudar-te amb la lumbar'],'Redueix el recorregut.','Pausa de 2 s en obrir.');
+g('adduct',['Seu a la màquina amb les cames obertes i l’esquena recolzada.','Tanca les cames portant-les cap al centre.','Obre lent controlant el pes.'],'Expira en tancar.','Nota com treballa la part interior de les cuixes.',['Tancar de cop','Deixar caure el pes'],'Pes lleuger.','Pausa de 2 s al centre.');
+g('run',['Postura alta, mirada endavant i espatlles relaxades.','El peu aterra sota el cos, amb passos curts i ràpids.','Braços a 90°, balancejant-se endavant i enrere.'],'Ritme còmode: que puguis parlar.','Prioritza el ritme còmode abans que la velocitat.',['Passos massa llargs','Tensió a les espatlles'],'Alterna caminar i trotar.','Afegeix intervals ràpids de 30 s.');
+g('jack',['Dret, amb els peus junts i els braços als costats.','Salta obrint cames i braços alhora.','Torna al centre i repeteix amb ritme constant.'],'Respira de manera constant.','Aterra amb els genolls una mica flexionats.',['Aterrar rígid','Anar massa ràpid'],'Versió sense salt (pas lateral).','Més ritme.');
+GUIDE.jump=GUIDE.jack;
+g('bike',['Ajusta el seient a l’altura dels malucs.','Pedaleja suaument amb l’esquena recta i les mans relaxades.','Mantén un ritme constant que et deixi parlar.'],'Respiració profunda i regular.','Fes força amb tot el peu, no només amb la punta.',['Seient massa baix','Esquena arrodonida'],'Redueix la resistència.','Puja la resistència o fes esprints de 20 s.');
+g('rower',['Seu amb els peus fixos i els braços estirats.','Empeny primer amb les cames, després inclina el tronc i finalment tira amb els braços.','Torna en ordre invers: braços, tronc, cames.'],'Expira en tirar.','Ordre: cames, esquena, braços.',['Tirar només amb els braços','Arrodonir l’esquena'],'Ritme suau.','Intervals de 30 s forts.');
+g('reardelt',['Inclina el tronc amb l’esquena plana i els braços penjant.','Obre els braços cap als costats fins a l’altura de l’esquena.','Baixa lent.'],'Expira en obrir.','Imagina que acostes els omòplats.',['Fer-ho amb impuls','Aixecar amb el trapezi'],'Pes lleuger.','Pausa de 2 s.');
+g('reardelt0',['Inclina el tronc amb l’esquena plana i els braços penjant.','Obre els braços cap als costats fins a l’altura de l’esquena.','Baixa lent.'],'Expira en obrir.','Imagina que acostes els omòplats.',['Fer-ho amb impuls','Aixecar amb el trapezi'],'Fes-ho més lent i amb menys recorregut.','Pausa de 3 s amb els omòplats ajuntats.');
+g('pullup',['Agafa la barra amb les mans una mica més amples que les espatlles i penja’t amb els braços estirats.','Porta el pit cap a la barra baixant els colzes fins que la barbeta la passi.','Baixa lent (3 s) fins estirar els braços.'],'Expira en pujar.','Comença baixant les omòplats, com si les posessis a les butxaques.',['Balancejar-se','No baixar del tot','Encongir les espatlles'],'Dominades assistides, amb goma, o salta i baixa lent.','Pausa de 2 s a dalt o fes-les amb pes.');
+g('hang',['Agafa la barra amb les mans una mica més amples que les espatlles.','Penja’t amb els braços estirats i les espatlles actives, lluny de les orelles.','Aguanta el temps marcat.'],'Respira lent.','Si et canses, posa els peus a terra o doblega els genolls.',['Encongir les espatlles cap a les orelles'],'Deixa un peu o els dos a terra.','Allarga el temps.');
+g('rowinv',['Estira’t sota una barra baixa o una taula resistent i agafa-la amb les mans.','Cos recte com una taula: porta el pit cap a la barra.','Baixa lent estirant els braços.'],'Expira en tirar.','Com més horitzontal el cos, més difícil.',['Malucs caiguts','Tirar només amb els braços'],'Doblega els genolls i apropa els peus.','Eleva els peus sobre un banc.');
+g('wallsit',['Esquena contra la paret i els peus a uns 50 cm.','Baixa fins que les cuixes quedin paral·leles a terra, amb els genolls sobre els turmells.','Aguanta el temps marcat.'],'Respira lent.','Prem l’esquena i el cul contra la paret.',['Genolls més enllà dels peus','Recolzar les mans a les cuixes'],'Baixa menys.','Aixeca un peu uns segons.');
+
 function figBox(id,label){
   if(!id||!Figs.has(id))return '';
-  return '<div class="figbox">'+Figs.svg(id,{label:'Dibuix: '+label})+'<p class="figtip"><b>Tècnica:</b> '+esc(Figs.tip(id))+'</p>'+(ERRS[id]?'<p class="figtip"><b>Evita:</b> '+esc(ERRS[id])+'</p>':'')+'</div>';
+  var G=GUIDE[id],h='<div class="figbox">'+Figs.svg(id,{label:'Dibuix: '+label});
+  if(Figs.two(id))h+='<p class="figlegend"><span class="lg lg-hl"></span>Zona que treballa <span class="lg lg-gh"></span>Posició inicial <span class="lg lg-ar">➜</span>Moviment</p>';
+  if(!G){return h+'<p class="figtip"><b>Tècnica:</b> '+esc(Figs.tip(id))+'</p>'+(ERRS[id]?'<p class="figtip"><b>Evita:</b> '+esc(ERRS[id])+'</p>':'')+'</div>';}
+  h+='<h4 class="gh">Com es fa</h4><ol class="steps">';
+  G.steps.forEach(function(s){h+='<li>'+esc(s)+'</li>';});
+  h+='</ol><p class="keytip"><b>Clau:</b> '+esc(G.tip)+'</p>';
+  h+='<p class="avoid"><b>Evita:</b> '+G.err.map(esc).join(' · ')+'</p>';
+  h+='<details class="more"><summary>Respiració i variants</summary><p><b>Respiració:</b> '+esc(G.resp)+'</p><p><b>Més fàcil:</b> '+esc(G.easy)+'</p><p><b>Més difícil:</b> '+esc(G.hard)+'</p></details>';
+  return h+'</div>';
 }
 function viewSessio(P){
   var di=UI.sel,info=dayInfo(P,di),pl=info.plan,c=calc(P);

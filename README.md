@@ -62,3 +62,11 @@ npm install -g netlify-cli
 npm install
 netlify dev
 ```
+
+
+## El logo "Powered by Netlify"
+
+El logo/insígnia el posa Netlify sobre la teva pàgina i **no es pot moure des del codi de l'app**.
+Per això el cronòmetre deixa un marge a la dreta perquè no el tapi.
+Per treure'l: Netlify > el teu projecte > Project configuration > General > "Powered by Netlify badge"
+(no sempre disponible als projectes del pla gratuït; cada visitant també el pot amagar des del propi logo).
