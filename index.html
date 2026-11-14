@@ -1,5 +1,18 @@
-<title>Forma en Parella</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2F5BFF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RouteaM">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>RouteaM</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
 <style>
 /* Layout: gimnàs de pissarra. Capçalera amb les dues persones, pestanyes enganxades a dalt, contingut en una columna, cronòmetre fix a baix. */
@@ -169,8 +182,40 @@ svg.fig.one{max-width:150px}
 .week button.r{background:none;border:0;border-top:1px solid var(--line);text-align:left;width:100%;color:inherit;border-radius:0;padding-inline:4px}
 .week button.r:first-child{border-top:0}
 .week button.r.on{background:var(--ac-soft)}
+
+/* Mòbil */
+html{-webkit-text-size-adjust:100%}
+button,a,select,input{touch-action:manipulation}
+button{-webkit-tap-highlight-color:transparent}
+.top{padding-block:12px 8px;gap:10px}
+.brand-t{font-size:2rem;text-transform:none;letter-spacing:.01em}
+.brand-s{font-size:.82rem}
+.who button{padding:8px 10px}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);overflow:visible}
+.tabs a{flex:none;padding:13px 0;font-size:clamp(.78rem,3.7vw,.98rem);letter-spacing:0;white-space:nowrap}
+main{padding-block:14px}
+.dock{padding-top:8px}
+.dock-time{font-size:2.3rem;min-width:4.3rem}
+.dock-main{gap:8px}
+.ib{width:44px;height:44px}
+.presets{flex-wrap:wrap;overflow:visible}
+.presets button{min-height:36px}
+.figbox{padding:8px 8px 6px}
+.cal button.d{min-height:46px}
+@media (max-width:380px){
+  .title{font-size:2rem}
+  .brand-t{font-size:1.7rem}
+  .who button small{display:none}
+  .ex .sx{font-size:2.1rem}
+  .setb{width:46px;height:46px}
+}
+@media (min-width:700px){
+  .cal button.d{aspect-ratio:1/0.8}
+}
 </style>
 
+</head>
+<body>
 <div class="wrap">
   <div class="top" id="top"></div>
   <div class="tabsbar"><nav class="tabs" id="tabs" aria-label="Seccions"></nav></div>
@@ -182,12 +227,13 @@ svg.fig.one{max-width:150px}
     <div class="dock-main">
       <div class="dock-time" id="tmTime">00:00</div>
       <div class="dock-label" id="tmLabel">Cronòmetre</div>
-      <button class="ib" id="tmAdd" type="button" aria-label="Afegir 15 segons"><span style="font-weight:700;font-size:.8rem">+15</span></button>
+      <button class="ib" id="tmMore" type="button" aria-expanded="false" aria-controls="presets" aria-label="Més opcions del cronòmetre"><svg viewBox="0 0 24 24"><path d="M6 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg></button>
       <button class="ib" id="tmReset" type="button" aria-label="Reiniciar"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6.5 12 11V8a5 5 0 1 1-5 5H5a7 7 0 1 0 7-8z"/></svg></button>
       <button class="ib go" id="tmPlay" type="button" aria-label="Iniciar"><svg id="tmIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
     </div>
-    <div class="presets" id="presets">
+    <div class="presets" id="presets" hidden>
       <button type="button" data-t="30">30 s</button><button type="button" data-t="45">45 s</button><button type="button" data-t="60">1 min</button><button type="button" data-t="90">1:30</button><button type="button" data-t="120">2 min</button>
+      <button type="button" id="tmAdd" aria-label="Afegir 15 segons">+15 s</button>
       <button type="button" class="mode" id="tmMode">Passar a crono</button>
     </div>
   </div>
@@ -542,6 +588,11 @@ var PLAN={
  str:[['Gos mirant avall','45 s',45],['Gambada baixa amb rotació','30 s per costat',60],['Quàdriceps de peu','30 s per cama',60],['Pit a la porta','30 s per braç',60],['Glutis en figura 4','30 s per cama',60],['Postura del nen','45 s',45]]}
 };
 
+/* Variants sense pesos externs (material = pes corporal) */
+function v(n,f,o){var r={n:n,f:f};if(o)for(var k in o)r[k]=o[k];return r;}
+var BODY={"Esquat a la Smith o a la màquina hack": [["Esquat amb pes corporal i pausa de 2 s a baix", "squat"], null], "Premsa de cames": [["Esquat búlgar amb el peu de darrere sobre un banc", "bulgarian"], null], "Hip thrust amb barra o a la màquina": [["Hip thrust a una cama amb l’esquena al banc", "hipthrust"], null], "Patada de glutis a la politja": [["Patada de glutis a quatre grapes", "kickback"], null], "Extensió de quàdriceps a la màquina": [["Esquat isomètric contra la paret", "wallsit", {"t": 40}], ["Esquat isomètric contra la paret", "wallsit", {"t": 40}]], "Gambades amb manuelles": [["Gambades caminant amb pes corporal", "lunge"], null], "Elevació de talons a la premsa": [["Elevacions de talons a una cama sobre un escaló", "calf"], ["Elevacions de talons a una cama sobre un escaló", "calf"]], "Elevació de talons asseguda a la màquina": [["Elevacions de talons dret amb pausa de 2 s a dalt", "calf"], ["Elevacions de talons dret amb pausa de 2 s a dalt", "calf"]], "Press de pit amb manuelles al banc pla": [["Flexions", "pushup"], null], "Press inclinat amb manuelles": [["Flexions amb els peus elevats sobre el banc", "pushup_decline"], null], "Press d’espatlles amb manuelles assegut": [["Flexions en V (cul amunt)", "pike"], null], "Elevacions laterals amb manuelles": [["Planxa amb toc d’espatlla", "plank", {"t": 30}], ["Planxa amb toc d’espatlla", "plank", {"t": 30}]], "Elevacions laterals a la politja": [["Flexions en V amb pausa de 2 s a baix", "pike"], ["Flexions en V amb pausa de 2 s a baix", "pike"]], "Obertures a la màquina pec-deck": [["Flexions amb les mans més separades", "pushup"], ["Flexions amb les mans més separades", "pushup"]], "Creuaments a la politja": [["Flexions lentes (3 s baixant)", "pushup"], ["Flexions lentes (3 s baixant)", "pushup"]], "Extensió de tríceps a la politja": [["Fons de tríceps al banc", "dips"], null], "Press francès amb manuelles": [["Flexions de diamant (mans juntes)", "pushup"], null], "Rotació russa amb disc": [["Rotació russa sense pes", "russian"], ["Rotació russa sense pes", "russian"]], "Pes mort romanès amb barra o manuelles": [["Pes mort romanès a una cama sense pes", "goodmorning"], ["Pes mort romanès a una cama sense pes", "goodmorning"]], "Curl femoral estirat a la màquina": [["Curl femoral amb tovallola lliscant a terra", "bridge_curl"], null], "Hip thrust amb una manuella": [["Pont de glutis amb pausa de 2 s a dalt", "bridge"], null], "Gambada enrere amb manuelles": [["Gambada enrere amb pes corporal", "lunge"], null], "Màquina d’abductors": [["Abduccions laterals tombat de costat", "abduct"], ["Abduccions laterals tombat de costat", "abduct"]], "Esquat sumo amb una manuella": [["Esquat sumo amb pes corporal i pausa de 2 s", "sumo"], ["Esquat sumo amb pes corporal i pausa de 2 s", "sumo"]], "Màquina d’adductors": [["Pont de glutis amb un coixí entre els genolls", "bridge"], null], "Jalón al pit a la politja": [["Dominades o dominades assistides a la màquina", "pullup"], ["Remada australiana sota una taula resistent", "rowinv"]], "Remada asseguda a la politja": [["Remada australiana sota una barra baixa", "rowinv"], ["Superman amb pausa de 2 s", "superman"]], "Remada amb una mà amb manuella": [["Superman amb pausa de 2 s", "superman"], null], "Remada al banc inclinat amb manuelles": [["Y-T-W tombat boca avall", "superman"], ["Y-T-W tombat boca avall", "superman"]], "Face pull a la politja": [["Retracció d’escàpules penjat de la barra", "hang"], ["W tombat boca avall (retracció d’escàpules)", "superman"]], "Ocells a la pec-deck inversa": [["Obertura de braços inclinat, sense pes", "reardelt0"], ["Obertura de braços inclinat, sense pes", "reardelt0"]], "Encongiments amb manuelles": [["Encongiments d’espatlles amb pausa de 3 s", "shrug0"], ["Encongiments d’espatlles amb pausa de 3 s", "shrug0"]], "Curl de bíceps amb manuelles": [["Dominades amb agafada supinada (chin-up) o assistides", "pullup"], ["Curl isomètric amb una tovallola sota el peu", "curl0"]], "Curl martell amb manuelles": [["Penjar-se de la barra (avantbraços)", "hang", {"t": 30}], ["Planxa alta amb mans actives", "plank", {"t": 30}]], "Esquat goblet amb manuella": [["Esquat amb pes corporal", "squat"], ["Esquat amb pes corporal", "squat"]], "Press de pit amb manuelles": [["Flexions", "pushup"], null], "Pes mort romanès lleuger": [["Bom dia amb pes corporal", "goodmorning"], ["Bom dia amb pes corporal", "goodmorning"]], "Press d’espatlles amb manuelles": [["Flexions en V", "pike"], null], "Gambades caminant amb manuelles": [["Gambades caminant amb pes corporal", "lunge"], null]};
+(function(){function ap(e){var b=BODY[e.g.n];if(b){if(b[0])e.bg=v(b[0][0],b[0][1],b[0][2]);if(b[1])e.bh=v(b[1][0],b[1][1],b[1][2]);}if(e.alt)ap(e.alt);}
+  for(var d in PLAN){if(PLAN[d].ex)PLAN[d].ex.forEach(ap);}})();
 var PHASES=['Base','Més repeticions','Més sèries','Descàrrega'];
 var PHASE_TXT=[
  'Setmana base: aprèn bé la tècnica i troba una càrrega còmoda.',
@@ -601,6 +652,16 @@ var ERRS={
  bike:'Seient massa baix, esquena arrodonida o fer tota la força amb la punta del peu.',
  rower:'Tirar només amb els braços; comença sempre amb les cames.'
 };
+
+
+ERRS.pullup='Balancejar el cos per agafar impuls o no baixar del tot i amb control.';
+ERRS.hang='Encongir les espatlles cap a les orelles.';
+ERRS.rowinv='Malucs caiguts o tirar només amb els braços.';
+ERRS.wallsit='Genolls més enllà dels peus o recolzar les mans sobre les cuixes.';
+ERRS.goodmorning='Arrodonir l’esquena o flexionar massa els genolls.';
+ERRS.reardelt0='Fer-ho amb impuls o aixecar amb el trapezi en comptes de l’espatlla.';
+ERRS.shrug0='Fer cercles amb les espatlles.';
+ERRS.curl0='Deixar que el peu s’alci o balancejar el cos.';
 
 /* ---------- Dieta ---------- */
 var MEALS=[
@@ -691,7 +752,7 @@ function parse(s){var a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2]);}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function fmt(n,d){return Number(n).toLocaleString('ca',{maximumFractionDigits:d==null?1:d});}
 var TODAY=iso(new Date());
-function newPerson(name,sex,age,h,w,goal,mode){return {name:name,sex:sex,age:age,height:h,weight:w,goal:goal,level:'principiant',mode:mode,custom:false,log:[],done:{},sets:{},opt:{},rest:{},fb:{},start:'',restPref:'rota',ts:0};}
+function newPerson(name,sex,age,h,w,goal,mode){return {name:name,sex:sex,age:age,height:h,weight:w,goal:goal,level:'principiant',mode:mode,custom:false,log:[],done:{},sets:{},opt:{},rest:{},fb:{},start:'',mat:'body',restPref:'rota',ts:0};}
 function defaults(){return {cur:0,sync:{code:''},people:[newPerson('Jo','M',30,178,75,'tonificar','gym'),newPerson('Parella','F',28,166,62,'perdre','home')]};}
 var S;
 try{S=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){S=null;}
@@ -699,7 +760,7 @@ if(!S){try{var O=JSON.parse(localStorage.getItem('forma-parella-v1')||'null');
   if(O&&O.people&&O.people.length===2){O.people.forEach(function(P,i){P.done=(O.done&&O.done[i])||{};P.sets=(O.sets&&O.sets[i])||{};P.opt=(O.opt&&O.opt[i])||{};P.rest={};P.restPref='rota';P.ts=P.custom?Date.now():0;});S={cur:O.cur||0,people:O.people,sync:{code:''}};}}catch(e){}}
 if(!S||!S.people||S.people.length!==2)S=defaults();
 S.sync=S.sync||{code:''};
-S.people.forEach(function(P){P.done=P.done||{};P.sets=P.sets||{};P.opt=P.opt||{};P.rest=P.rest||{};P.fb=P.fb||{};if(!P.start)P.start=mondayOf(TODAY);P.log=P.log||[];if(P.restPref==null)P.restPref='rota';P.ts=P.ts||0;});
+S.people.forEach(function(P){P.done=P.done||{};P.sets=P.sets||{};P.opt=P.opt||{};P.rest=P.rest||{};P.fb=P.fb||{};if(!P.start)P.start=mondayOf(TODAY);if(!P.mat)P.mat='body';P.log=P.log||[];if(P.restPref==null)P.restPref='rota';P.ts=P.ts||0;});
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function touch(i){S.people[i].ts=Date.now();save();schedulePush();}
 var UI={sel:TODAY,cm:new Date().getMonth(),cy:new Date().getFullYear(),view:'calendari'};
@@ -747,7 +808,7 @@ function syncNow(){
         if((+d.people[i].ts||0)>(+S.people[i].ts||0)){S.people[i]=d.people[i];changed=true;}
       });
     }
-    S.people.forEach(function(P){P.done=P.done||{};P.sets=P.sets||{};P.opt=P.opt||{};P.rest=P.rest||{};P.fb=P.fb||{};if(!P.start)P.start=mondayOf(TODAY);P.log=P.log||[];});
+    S.people.forEach(function(P){P.done=P.done||{};P.sets=P.sets||{};P.opt=P.opt||{};P.rest=P.rest||{};P.fb=P.fb||{};if(!P.start)P.start=mondayOf(TODAY);if(!P.mat)P.mat='body';P.log=P.log||[];});
     SY.state='ok';SY.last=Date.now();SY.msg='';save();
     if(changed&&!busyEditing())render();
   }).catch(function(e){
@@ -826,7 +887,7 @@ function sampleNote(P){
   return '<div class="note"><b>Dades d’exemple.</b> Posa edat, alçada i pes reals al Perfil perquè les càrregues i la dieta siguin les teves.<br><button class="btn sm" type="button" data-a="go" data-v="perfil">Anar al perfil</button></div>';
 }
 function renderTop(){
-  var h='<div class="brandrow"><div><span class="brand-t"><span>Forma en Parella</span></span><span class="brand-s">6 dies d’entrenament i 1 de descans</span></div><span id="syn" class="syn '+SY.state+'">'+synText()+'</span></div><div class="who" role="group" aria-label="Qui entrena">';
+  var h='<div class="brandrow"><div><span class="brand-t"><span>RouteaM</span></span><span class="brand-s">Entrena en parella: 6 dies i 1 de descans</span></div><span id="syn" class="syn '+SY.state+'">'+synText()+'</span></div><div class="who" role="group" aria-label="Qui entrena">';
   S.people.forEach(function(P,i){
     h+='<button type="button" data-a="who" data-i="'+i+'" aria-pressed="'+(i===S.cur)+'"><span class="dot" style="background:var(--'+(i?'b':'a')+')"></span><span style="min-width:0"><b>'+esc(P.name)+'</b><small>'+GOALS[P.goal].label+' · '+fmt(P.weight)+' kg</small></span></button>';
   });
@@ -863,11 +924,17 @@ function fatigue(P){
   if(l[0]==='f'&&l[1]==='f')return {m:1.05,t:'Les dues últimes sessions t’han semblat fàcils. He pujat les càrregues un 5 %.'};
   return {m:1,t:''};
 }
-function loadFor(e,P,mul){
-  if(!e.g.bw)return null;
+function loadFor(bw,P,mul){
+  if(!bw)return null;
   var lvl=P.level==='principiant'?0.85:1;
-  var kg=P.weight*e.g.bw*lvl*GOALS[P.goal].load*mul;
+  var kg=P.weight*bw*lvl*GOALS[P.goal].load*mul;
   return Math.max(2.5,Math.round(kg/2.5)*2.5);
+}
+function variant(e,P){
+  var body=P.mat!=='weights',gym=P.mode==='gym',b=body?(gym?e.bg:e.bh):null;
+  if(b)return {n:b.n,f:b.f,t:b.t!=null?b.t:e.t,bw:null,each:false};
+  if(gym)return {n:e.g.n,f:e.fg,t:e.t,bw:e.g.bw,each:!!e.each};
+  return {n:e.h.n,f:e.fh,t:e.t,bw:null,each:false};
 }
 /* Tria els exercicis que caben en 50 min (5 d'escalfament + 5 d'estiraments inclosos). */
 function build(P,pl,di,noCut){
@@ -875,11 +942,12 @@ function build(P,pl,di,noCut){
   var cm=pl.cardio?pl.cardio.mins[goalIdx(P)]:0,budget=3000-600-cm*60,used=0,list=[];
   for(var i=0;i<pl.ex.length;i++){
     var e=pl.ex[i];if(pr.b%2===1&&e.alt)e=e.alt;
+    var vr=variant(e,P);
     var s=Math.max(2,sets0+(pr.c===2&&i<3?1:0)-(pr.c===3&&!noCut?1:0));
     var lo=R[0]+(pr.c===1?2:0),hi=R[1]+(pr.c===1?2:0),rn=(lo+hi)/2;
-    var tt=e.t?e.t+(pr.c===1?5:0):0,rest=e.t?30:rest0,secs=s*((tt||rn*3)+rest);
+    var tt=vr.t?vr.t+(pr.c===1?5:0):0,rest=vr.t?30:rest0,secs=s*((tt||rn*3)+rest);
     if(list.length>=4&&used+secs>budget)break;
-    list.push({e:e,i:list.length,sets:s,reps:lo===hi?''+lo:lo+'–'+hi,t:tt,rest:rest,secs:secs});used+=secs;
+    list.push({e:e,vr:vr,i:list.length,sets:s,reps:lo===hi?''+lo:lo+'–'+hi,t:tt,rest:rest,secs:secs});used+=secs;
   }
   var min=Math.round((600+used+cm*60)/60);
   if(pr.c===3&&!noCut&&min<40)return build(P,pl,di,true);
@@ -918,7 +986,7 @@ function viewCalendari(P){
   }else{
     var sb=build(P,sp,UI.sel);
     h+='<p style="margin:4px 0">'+sp.mus+'</p><div class="row" style="margin:8px 0"><span class="chip ac">≈ '+sb.min+' min en total</span><span class="chip">5 min escalfament</span><span class="chip">5 min estiraments</span><span class="chip">'+(P.mode==='gym'?'Gimnàs':'Casa')+'</span></div><ol class="list">';
-    sb.list.forEach(function(it){var v=P.mode==='gym'?it.e.g:it.e.h;h+='<li>'+esc(v.n)+'</li>';});
+    sb.list.forEach(function(it){h+='<li>'+esc(it.vr.n)+'</li>';});
     h+='</ol>';
   }
   h+='<div style="margin-top:14px"><button class="btn" type="button" data-a="open">Obrir sessió</button></div></div>';
@@ -954,7 +1022,7 @@ function viewSessio(P){
   }
   var B=build(P,pl,di),pr=B.pr,fa=fatigue(P),mul=pr.loadMul*fa.m;
   h+='<div class="card"><div class="eyebrow">'+longDate(di)+' · Dia '+info.n+' de la rutina</div><h1 class="title">'+pl.title+'</h1><p style="margin:4px 0 0"><b>Treballem:</b> '+pl.mus+'</p>';
-  h+='<div class="row" style="margin:10px 0"><span class="chip ac">≈ '+B.min+' min</span><span class="chip">5 min escalfament</span><span class="chip">5 min estiraments</span>'+(pl.optional?'<span class="chip">Opcional</span>':'')+'<span class="chip">'+GOALS[P.goal].label+'</span></div>';
+  h+='<div class="row" style="margin:10px 0"><span class="chip ac">≈ '+B.min+' min</span><span class="chip">5 min escalfament</span><span class="chip">5 min estiraments</span>'+(pl.optional?'<span class="chip">Opcional</span>':'')+'<span class="chip">'+GOALS[P.goal].label+'</span><span class="chip">'+(P.mat==='weights'?'Amb pesos':'Pes corporal')+'</span></div>';
   h+='<div class="seg" role="group" aria-label="On entrenes"><button type="button" data-a="mode" data-m="gym" aria-pressed="'+(P.mode==='gym')+'">Gimnàs</button><button type="button" data-a="mode" data-m="home" aria-pressed="'+(P.mode==='home')+'">Casa</button></div></div>';
   h+='<div class="note"><b>Setmana '+(pr.w+1)+': '+pr.label+'.</b> '+pr.txt+(fa.t?'<br>'+fa.t:'')+'</div>';
   var wu=[['Cardio suau',120,P.mode==='gym'?'Bici o cinta a ritme suau':'Marxa al lloc o jumping jacks suaus'],['Mobilitat articular',60,'Cercles de coll, espatlles, malucs i genolls'],['Mobilitat específica',60,pl.wu],['Sèrie d’aproximació',60,'Una sèrie lleugera (50 % de càrrega) del primer exercici']];
@@ -963,14 +1031,14 @@ function viewSessio(P){
   h+='</div></div>';
   var setsDay=(P.sets[di]=P.sets[di]||{});
   B.list.forEach(function(it,i){
-    var e=it.e,v=P.mode==='gym'?e.g:e.h,fid=P.mode==='gym'?e.fg:e.fh,count=setsDay[i]||0,complete=count>=it.sets;
-    var load=P.mode==='gym'?loadFor(e,P,mul):null;
+    var e=it.e,vr=it.vr,v=vr,fid=vr.f,count=setsDay[i]||0,complete=count>=it.sets;
+    var load=vr.bw?loadFor(vr.bw,P,mul):null;
     h+='<div class="card ex'+(complete?' complete':'')+'"><div class="head"><div class="num">'+(i+1)+'</div><div><div class="name">'+esc(v.n)+'</div><div class="hint" style="margin-top:2px">'+esc(e.m||'')+'</div></div></div>';
     h+=figBox(fid||figId(v.n),v.n);
     h+='<div class="row sp"><div class="sx">'+it.sets+' × '+(it.t?it.t+' s':it.reps)+'<small>descans '+it.rest+' s</small></div>';
     if(it.t)h+='<button class="btn sm" type="button" data-a="tm" data-s="'+it.t+'" data-l="'+esc(v.n)+'">Iniciar '+it.t+' s</button>';
     h+='</div>';
-    if(load)h+='<div class="hint">Càrrega inicial <b>≈ '+fmt(load)+' kg'+(e.each?' per mà':'')+'</b>, calculada amb el teu pes. Ajusta-la perquè les últimes repeticions costin.</div>';
+    if(load)h+='<div class="hint">Càrrega inicial <b>≈ '+fmt(load)+' kg'+(vr.each?' per mà':'')+'</b>, calculada amb el teu pes. Ajusta-la perquè les últimes repeticions costin.</div>';
     if(P.mode==='home'&&e.easy&&P.level==='principiant')h+='<div class="hint">Si costa: '+esc(e.easy)+'</div>';
     h+='<div class="chips" role="group" aria-label="Sèries fetes">';
     for(var s=1;s<=it.sets;s++)h+='<button class="setb" type="button" data-a="set" data-i="'+i+'" data-n="'+s+'" data-tot="'+it.sets+'" data-r="'+it.rest+'" aria-pressed="'+(count>=s)+'" aria-label="Sèrie '+s+'">'+s+'</button>';
@@ -1094,7 +1162,9 @@ function viewPerfil(P){
   h+='<div class="field"><label for="f_level">Nivell</label><select id="f_level" data-f="level"><option value="principiant"'+(P.level==='principiant'?' selected':'')+'>Inicial</option><option value="intermedi"'+(P.level==='intermedi'?' selected':'')+'>Intermedi</option></select></div>';
   h+='<div class="field"><label for="f_restPref">Dia de descans habitual</label><select id="f_restPref" data-f="restPref"><option value="rota"'+(P.restPref==='rota'?' selected':'')+'>Variable (canvia cada setmana)</option>';
   ORDER.forEach(function(wd){h+='<option value="'+wd+'"'+(String(P.restPref)===String(wd)?' selected':'')+'>Sempre: '+DAYS[wd]+'</option>';});
-  h+='</select></div></div><p class="hint" style="margin:12px 0 0">IMC '+fmt(c.bmi)+'. Si hi ha molt pes a perdre, el cardio de casa passa a ser sense impacte. Cada setmana pots moure el descans des del Calendari.</p></div>';
+  h+='</select></div>';
+  h+='<div class="field" style="grid-column:1/-1"><label for="f_mat">Material</label><select id="f_mat" data-f="mat"><option value="body"'+(P.mat!=='weights'?' selected':'')+'>Pes corporal (sense pesos externs)</option><option value="weights"'+(P.mat==='weights'?' selected':'')+'>Amb pesos i màquines</option></select></div>';
+  h+='</div><p class="hint" style="margin:12px 0 0">IMC '+fmt(c.bmi)+'. Si hi ha molt pes a perdre, el cardio de casa passa a ser sense impacte. Cada setmana pots moure el descans des del Calendari.</p></div>';
   h+='<div class="card"><h3>Objectiu</h3><p class="hint" style="margin:4px 0 10px">Es pot canviar quan vulguis. Ajusta sèries, repeticions, descansos, calories i cardio.</p>'+goalSeg(P)+'</div>';
   h+=syncCard();
   h+='<div class="card"><h3>Les teves dades</h3><p class="hint">Es guarden en aquest dispositiu. Amb la sincronització activada, també es copien a la teva parella de codi.</p>';
@@ -1112,6 +1182,7 @@ function render(){
   else if(v==='progres')h=viewProgres(P);
   else h=viewPerfil(P);
   document.getElementById('main').innerHTML=h;
+  wake();
 }
 function setView(v,noScroll){
   if(!VIEWS.some(function(x){return x[0]===v;}))v='calendari';
@@ -1169,14 +1240,27 @@ document.addEventListener('change',function(e){
   var f=t.getAttribute('data-f');if(!f)return;
   var v=t.value;
   if(f==='name'){P.name=v.trim()||P.name;}
-  else if(f==='sex'||f==='level'||f==='restPref'){P[f]=v;}
+  else if(f==='sex'||f==='level'||f==='restPref'||f==='mat'){P[f]=v;}
   else if(f==='weight'){var k=parseFloat(v);if(k>=30&&k<=250)upsertW(P,Math.round(k*10)/10);}
   else{var n=parseFloat(v);if(!isNaN(n))P[f]=n;}
-  if(f!=='restPref')P.custom=true;
+  if(f!=='restPref'&&f!=='mat')P.custom=true;
   touch(ci);render();
 });
 window.addEventListener('hashchange',function(){setView(location.hash.replace('#',''));});
 
+var WL=null;
+function wake(){
+  try{
+    if(UI.view!=='sessio'){if(WL){WL.release();WL=null;}return;}
+    if(navigator.wakeLock&&!document.hidden&&!WL){navigator.wakeLock.request('screen').then(function(l){WL=l;l.addEventListener('release',function(){WL=null;});}).catch(function(){});}
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',function(){if(!document.hidden)wake();});
+var elMore=document.getElementById('tmMore'),elPre=document.getElementById('presets');
+function fitDock(){document.body.style.paddingBottom=(elDock.offsetHeight+24)+'px';}
+elMore.addEventListener('click',function(){var open=elPre.hidden;elPre.hidden=!open;elMore.setAttribute('aria-expanded',open?'true':'false');fitDock();});
+if(window.ResizeObserver)new ResizeObserver(fitDock).observe(elDock);
+fitDock();
 setView(location.hash.replace('#','')||'calendari',true);
 tmDraw();
 if(S.sync.code)syncNow();
@@ -1184,3 +1268,6 @@ if(S.sync.code)syncNow();
 
 
 </script>
+<script>if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+</body>
+</html>
