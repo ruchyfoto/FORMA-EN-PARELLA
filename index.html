@@ -235,6 +235,10 @@ details.more p{margin:0 0 8px;font-size:.92rem}
 .optnav button{min-width:46px;min-height:46px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--fg);font:700 1.2rem var(--f-body);cursor:pointer}
 .optnav .cnt{flex:1;text-align:center;font-size:.9rem;color:var(--muted);font-weight:600}
 .seg.wrap{flex-wrap:wrap}
+.pcol{min-width:0;display:flex;flex-direction:column;gap:2px}
+.pw{font-family:var(--f-disp);font-size:2rem;font-weight:800;line-height:1.1}
+.pl{display:flex;justify-content:space-between;gap:8px;font-size:.92rem;padding:4px 0;border-bottom:1px solid var(--line)}
+.pl b{font-weight:700;font-size:inherit;display:inline}
 </style>
 
 </head>
@@ -1078,7 +1082,7 @@ function syncNow(){
     }
     S.people.forEach(function(P){P.done=P.done||{};P.sets=P.sets||{};P.opt=P.opt||{};P.rest=P.rest||{};P.fb=P.fb||{};if(!P.start)P.start=mondayOf(TODAY);if(!P.mat)P.mat='body';P.log=P.log||[];});
     SY.state='ok';SY.last=Date.now();SY.msg='';save();
-    if(changed&&!busyEditing())render();
+    if(changed){if(busyEditing())SY.pend=true;else render();}
   }).catch(function(e){
     SY.state='err';
     SY.msg=e.message==='404'?'La sincronització només funciona quan l’aplicació està publicada a Netlify.':e.message==='nocrypto'?'Aquest navegador no permet la sincronització. Obre l’aplicació amb https.':'No s’ha pogut connectar. Es tornarà a provar sol.';
@@ -1087,7 +1091,9 @@ function syncNow(){
     if(SY.dirty){SY.dirty=false;schedulePush();}
   });
 }
-setInterval(function(){if(!document.hidden)syncNow();},30000);
+setInterval(function(){if(!document.hidden)syncNow();},8000);
+window.addEventListener('focus',function(){syncNow();});window.addEventListener('online',function(){syncNow();});window.addEventListener('pageshow',function(){syncNow();});
+document.addEventListener('focusout',function(){setTimeout(function(){if(SY.pend&&!busyEditing()){SY.pend=false;render();}},250);});
 document.addEventListener('visibilitychange',function(){if(!document.hidden)syncNow();});
 
 /* ---------- Cronòmetre ---------- */
@@ -1157,7 +1163,7 @@ function sampleNote(P){
 function renderTop(){
   var h='<div class="brandrow"><div><span class="brand-t"><span>RouteaM</span></span><span class="brand-s">Entrena en parella: 6 dies i 1 de descans</span></div><span id="syn" class="syn '+SY.state+'">'+synText()+'</span></div><div class="who" role="group" aria-label="Qui entrena">';
   S.people.forEach(function(P,i){
-    h+='<button type="button" data-a="who" data-i="'+i+'" aria-pressed="'+(i===S.cur)+'"><span class="dot" style="background:var(--'+(i?'b':'a')+')"></span><span style="min-width:0"><b>'+esc(P.name)+'</b><small>'+GOALS[P.goal].label+' · '+fmt(P.weight)+' kg</small></span></button>';
+    h+='<button type="button" data-a="who" data-i="'+i+'" aria-pressed="'+(i===S.cur)+'"><span class="dot" style="background:var(--'+(i?'b':'a')+')"></span><span style="min-width:0"><b>'+esc(P.name)+'</b><small>'+GOALS[P.goal].label+' · '+fmt(P.weight)+' kg'+(P.done&&P.done[TODAY]?' · ✓ avui':'')+'</small></span></button>';
   });
   h+='</div>';
   document.getElementById('top').innerHTML=h;
@@ -1500,6 +1506,27 @@ function weightChart(log){
   return svg;
 }
 function monthCount(i){var p=TODAY.slice(0,7),n=0,D=S.people[i].done;Object.keys(D).forEach(function(k){if(D[k]&&k.indexOf(p)===0)n++;});return n;}
+function ago(ts){
+  if(!ts)return 'encara sense dades';var m=Math.round((Date.now()-ts)/60000);
+  if(m<1)return 'ara mateix';if(m<60)return 'fa '+m+' min';var h=Math.round(m/60);if(h<24)return 'fa '+h+' h';var d=Math.round(h/24);return 'fa '+d+(d===1?' dia':' dies');
+}
+function lastDone(i){var D=S.people[i].done,best='';Object.keys(D).forEach(function(k){if(D[k]&&k>best)best=k;});return best;}
+function weekCount(i){var mo=mondayOf(TODAY),n=0,D=S.people[i].done;for(var k=0;k<7;k++){var d=parse(mo);d.setDate(d.getDate()+k);if(D[iso(d)])n++;}return n;}
+function lastDoneTxt(i){var d=lastDone(i);if(!d)return 'cap encara';if(d===TODAY)return 'avui';var dd=parse(d);return dd.getDate()+' '+MONTHS[dd.getMonth()].slice(0,3);}
+function pairCard(){
+  var h='<div class="card"><div class="row sp"><h3>Progrés de la parella</h3><span class="chip'+(S.sync.code?' ac':'')+'">'+(S.sync.code?'En directe':'Sense sincronitzar')+'</span></div><div class="grid2" style="margin-top:10px">';
+  S.people.forEach(function(Q,i){
+    var L=Q.log.slice().sort(function(a,b){return a.d<b.d?-1:1;}),dl=L.length>1?L[L.length-1].kg-L[0].kg:null;
+    function pl(k,v){return '<div class="pl"><span>'+k+'</span><b>'+v+'</b></div>';}
+    h+='<div class="pcol"><span class="eyebrow" style="color:var(--'+(i?'b':'a')+')">'+esc(Q.name)+(i===S.cur?' (tu)':'')+'</span><div class="pw">'+fmt(Q.weight)+' kg</div>'+(dl!=null?'<div class="small muted">'+(dl>0?'+':'')+fmt(dl)+' kg en total</div>':'')+
+      pl('Ratxa',streak(i))+pl('Setmana',weekCount(i)+' ses.')+pl('Mes',monthCount(i)+' ses.')+pl('Última',lastDoneTxt(i))+'<div class="small muted" style="margin-top:6px">Actualitzat '+ago(Q.ts)+'</div>'+
+      (i!==S.cur?'<button class="btn ghost sm" type="button" data-a="who" data-i="'+i+'" style="margin-top:8px">Veure’n el detall</button>':'')+'</div>';
+  });
+  h+='</div>'+(S.sync.code?'<p class="hint" style="margin:10px 0 0">S’actualitza sol cada pocs segons quan l’altra persona entrena o apunta el pes.</p>':'<p class="hint" style="margin:10px 0 0">Per veure els avenços de l’altra persona en directe, activa la sincronització al Perfil amb el mateix codi als dos mòbils.</p>')+'</div>';
+  var o=S.people[1-S.cur];
+  if(o.log.length>1)h+='<div class="card"><h3>Evolució del pes de '+esc(o.name)+'</h3><div style="margin-top:8px">'+weightChart(o.log)+'</div></div>';
+  return h;
+}
 function streak(i){
   var Q=S.people[i],d=parse(TODAY),n=0;
   if(!Q.done[TODAY])d.setDate(d.getDate()-1);
@@ -1519,9 +1546,7 @@ function viewProgres(P){
   h+='<div class="card"><h3>Apuntar el pes d’avui</h3><div class="row" style="margin-top:8px"><div class="field" style="flex:1;min-width:140px"><label for="wIn">Pes en kg</label><input id="wIn" type="number" inputmode="decimal" step="0.1" min="30" max="250" value="'+P.weight+'"></div><button class="btn" type="button" data-a="addw" style="align-self:flex-end">Desar</button></div>';
   if(L.length){h+='<div style="margin-top:12px">';L.slice(-6).reverse().forEach(function(e){var d=parse(e.d);h+='<div class="logrow"><span>'+d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear()+'</span><span><b>'+fmt(e.kg)+' kg</b> <button class="btn ghost sm" type="button" data-a="delw" data-d="'+e.d+'" aria-label="Esborrar registre">Esborrar</button></span></div>';});h+='</div>';}
   h+='</div>';
-  h+='<div class="card"><h3>Aquest mes</h3><div class="grid2" style="margin-top:8px">';
-  S.people.forEach(function(Q,i){h+='<div class="stat"><span class="eyebrow" style="color:var(--'+(i?'b':'a')+')">'+esc(Q.name)+'</span><b>'+monthCount(i)+'</b><span class="small muted">sessions fetes</span></div>';});
-  h+='</div></div>';
+  h+=pairCard();
   return h;
 }
 function field(id,label,type,val,extra){return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" data-f="'+id.replace('f_','')+'" type="'+type+'" value="'+esc(val)+'" '+(extra||'')+'></div>';}
