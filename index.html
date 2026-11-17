@@ -230,6 +230,11 @@ svg.fig text{font-family:var(--f-body);font-size:7px;fill:var(--muted);font-weig
 details.more{margin-top:8px;border-top:1px solid var(--line)}
 details.more summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:600;color:var(--ac)}
 details.more p{margin:0 0 8px;font-size:.92rem}
+.chip.ss{margin-top:6px;background:var(--warn-soft);color:var(--fg);border:1px solid var(--sun);font-weight:600}
+.optnav{display:flex;align-items:center;gap:8px;margin-top:8px}
+.optnav button{min-width:46px;min-height:46px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--fg);font:700 1.2rem var(--f-body);cursor:pointer}
+.optnav .cnt{flex:1;text-align:center;font-size:.9rem;color:var(--muted);font-weight:600}
+.seg.wrap{flex-wrap:wrap}
 </style>
 
 </head>
@@ -505,7 +510,54 @@ nodb('reardelt','reardelt0','Tronc inclinat amb l’esquena recta. Obre els bra�
 nodb('shrug','shrug0','Puja les espatlles cap a les orelles, pausa de 3 s i baixa lent. No fa falta pes.');
 nodb('curl','curl0','Posa una tovallola sota el peu i estira-la amb les mans com si fessis un curl, sense deixar que s’alci.');
 
-var HL={squat:['legs','glutes'],legpress:['legs','glutes'],bulgarian:['legs','glutes'],lunge:['legs','glutes'],legext:['legs'],bridge:['glutes'],bridge1:['glutes'],hipthrust:['glutes'],calf:['legs'],revcrunch:['torso'],bicycle:['torso'],crunch:['torso'],bench:['arms','torso'],incline:['arms','torso'],pushup:['arms','torso'],pushup_decline:['arms','torso'],pike:['arms'],ohp:['arms'],pushdown:['arms'],dips:['arms'],skull:['arms'],fly:['arms','torso'],latraise:['arms'],frontraise:['arms'],shrug:['arms'],shrug0:['arms'],pulldown:['arms','torso'],row_seated:['arms','torso'],row_bent:['arms','torso'],rowinv:['arms','torso'],facepull:['arms'],superman:['torso'],birddog:['torso','glutes'],backext:['torso'],curl:['arms'],curl0:['arms'],deadbug:['torso'],plank:['torso'],sideplank:['torso'],climber:['torso','legs'],russian:['torso'],legcurl:['legs'],bridge_curl:['legs','glutes'],rdl:['legs','glutes'],goodmorning:['legs','glutes'],kickback:['glutes'],sumo:['legs','glutes'],abduct:['glutes'],adduct:['legs'],run:['legs'],jack:['legs','arms'],jump:['legs','arms'],bike:['legs'],rower:['legs','arms','torso'],reardelt:['arms'],reardelt0:['arms'],pullup:['arms','torso'],hang:['arms'],wallsit:['legs']};
+
+/* ---- Figures noves (v3) ---- */
+P.stepup={tip:'Posa tot el peu sobre l’escaló, empeny amb aquesta cama i puja. Baixa lent controlant.',f:[
+ {hp:[58,54],t:-90,ft:[78,76],kh:[1,0],ft2:[50,92],kh2:[1,0],wr:[58,52],p:[['box',66,76,26,16]]},
+ {hp:[78,34],t:-90,ft:[78,76],kh:[1,0],ft2:[64,58],kh2:[1,-0.3],wr:[78,32],p:[['box',66,76,26,16]]}]};
+P.jumpsquat={tip:'Baixa a un esquat, salta amb força cap amunt i aterra suau, amb els genolls flexionats.',f:[
+ {hp:[44,68],t:-55,ft:[60,92],wr:[89,43]},
+ {hp:[60,36],t:-90,ft:[60,76],fd:50,kh:[1,0],wr:[66,0],eh:[0.5,0]}]};
+P.lateral={v:'f',tip:'Fes un pas llarg cap a un costat, flexiona aquest genoll i empeny amb la cama per tornar al centre.',f:[
+ {hp:[60,48],ft:[[44,92],[76,92]],wr:[[54,40],[66,40]],eh:[[-1,0.4],[1,0.4]]},
+ {hp:[44,66],ft:[[34,92],[82,92]],wr:[[50,40],[62,40]],kh:[[-1,0],[1,0]],eh:[[-1,0.4],[1,0.4]]}]};
+P.glutemarch={tip:'Mantén els malucs alts i alterna aixecant un peu, sense deixar caure la pelvis.',f:[
+ {hp:[50,66],t:140,ft:[74,92],ft2:[74,92],kh:[0.3,-1],kh2:[0.3,-1],wr:[46,89]},
+ {hp:[50,66],t:140,ft:[74,92],ft2:[84,58],kh:[0.3,-1],kh2:[0.3,-1],wr:[46,89]}]};
+P.skater={v:'f',tip:'Salta lateralment d’una cama a l’altra, aterra suau i deixa que l’altra cama passi darrere.',f:[
+ {hp:[46,50],ft:[[40,92],[64,84]],kh:[[-1,0.2],[1,0.2]],wr:[[60,50],[78,46]],eh:[[0,1],[1,0.4]]},
+ {hp:[74,50],ft:[[56,84],[80,92]],kh:[[-1,0.2],[1,0.2]],wr:[[40,46],[58,50]],eh:[[-1,0.4],[0,1]]}]};
+P.highknees={tip:'Corre sense avançar portant els genolls fins a l’altura dels malucs, amb ritme ràpid.',f:[
+ {hp:[60,48],t:-90,ft:[80,54],kh:[1,-0.5],ft2:[60,92],kh2:[1,0.2],wr:[48,36],wr2:[74,34],eh:[-1,0.3],eh2:[1,0.3]},
+ {hp:[60,48],t:-90,ft:[60,92],kh:[1,0.2],ft2:[80,54],kh2:[1,-0.5],wr:[74,34],wr2:[48,36],eh:[1,0.3],eh2:[-1,0.3]}]};
+P.burpee={tip:'Baixa les mans a terra, porta els peus enrere fins a la planxa, torna i salta amunt.',f:[
+ {hp:[46,66],t:-10,ft:[56,92],kh:[1,0],wr:[80,90],eh:[1,0]},
+ {hp:[67.4,74.3],t:204,ft:[107,92],wr:[40,90],eh:[1,0]}]};
+P.shouldertap={tip:'En posició de planxa alta, toca l’espatlla contrària sense balancejar els malucs.',f:[
+ {hp:[67.4,74.3],t:204,ft:[107,92],wr:[40,90],wr2:[40,90],eh:[1,0]},
+ {hp:[67.4,74.3],t:204,ft:[107,92],wr:[40,90],wr2:[44,58],eh:[1,0],eh2:[-0.6,-1]}]};
+P.tricepkick={tip:'Colze enganxat al costat. Estén l’avantbraç cap enrere fins que el braç quedi recte.',f:[
+ {hp:[54,50],t:-50,ft:[58,92],wr:[67,53],eh:[-1,0],db:1},
+ {hp:[54,50],t:-50,ft:[58,92],wr:[56,47],eh:[-1,0],db:1}]};
+P.uprightrow={tip:'Puja el pes rasant el cos fins a l’altura del mentó, amb els colzes per sobre de les mans.',f:[
+ {hp:[60,48],t:-90,ft:[60,92],wr:[64,46],db:2},
+ {hp:[60,48],t:-90,ft:[60,92],wr:[66,22],eh:[-0.2,-1],db:2}]};
+P.legraise={tip:'Amb la lumbar enganxada a terra, aixeca les cames estirades fins a vertical i baixa lent.',f:[
+ {hp:[60,86],t:180,ft:[104,86],wr:[40,89]},
+ {hp:[60,86],t:180,ft:[60,44],kh:[1,0],wr:[40,89]}]};
+P.flutter={tip:'Amb la lumbar enganxada a terra, alterna petites pujades i baixades de les cames estirades.',f:[
+ {hp:[60,86],t:180,ft:[104,80],ft2:[104,68],wr:[40,89]},
+ {hp:[60,86],t:180,ft:[104,68],ft2:[104,80],wr:[40,89]}]};
+P.hollow={tip:'Esquena lumbar enganxada a terra, braços estirats i cames elevades. Aguanta la forma de banana.',f:[
+ {hp:[56,86],t:200,ft:[98,72],wr:[2,72],eh:[0,-1]}]};
+P.vup={tip:'Tombat, puja alhora el tronc i les cames estirades formant una V i baixa lent.',f:[
+ {hp:[56,86],t:180,ft:[100,86],wr:[0,84]},
+ {hp:[56,86],t:-125,ft:[92,58],wr:[80,62],eh:[0,-1]}]};
+P.hangraise={tip:'Penjat de la barra, puja els genolls cap al pit sense balancejar-te i baixa lent.',f:[
+ {hp:[60,50],t:-90,ft:[58,86],kh:[-1,0.2],wr:[60,-10],eh:[1,0],p:[['ln',36,-10,84,-10,'prop',5]]},
+ {hp:[62,52],t:-92,ft:[74,68],kh:[1,-0.6],wr:[60,-10],eh:[1,0],p:[['ln',36,-10,84,-10,'prop',5]]}]};
+
+var HL={stepup:['legs','glutes'],jumpsquat:['legs','glutes'],lateral:['legs','glutes'],glutemarch:['glutes'],skater:['legs','glutes'],highknees:['legs'],burpee:['legs','arms','torso'],shouldertap:['arms','torso'],tricepkick:['arms'],uprightrow:['arms'],legraise:['torso'],flutter:['torso'],hollow:['torso'],vup:['torso'],hangraise:['torso'],squat:['legs','glutes'],legpress:['legs','glutes'],bulgarian:['legs','glutes'],lunge:['legs','glutes'],legext:['legs'],bridge:['glutes'],bridge1:['glutes'],hipthrust:['glutes'],calf:['legs'],revcrunch:['torso'],bicycle:['torso'],crunch:['torso'],bench:['arms','torso'],incline:['arms','torso'],pushup:['arms','torso'],pushup_decline:['arms','torso'],pike:['arms'],ohp:['arms'],pushdown:['arms'],dips:['arms'],skull:['arms'],fly:['arms','torso'],latraise:['arms'],frontraise:['arms'],shrug:['arms'],shrug0:['arms'],pulldown:['arms','torso'],row_seated:['arms','torso'],row_bent:['arms','torso'],rowinv:['arms','torso'],facepull:['arms'],superman:['torso'],birddog:['torso','glutes'],backext:['torso'],curl:['arms'],curl0:['arms'],deadbug:['torso'],plank:['torso'],sideplank:['torso'],climber:['torso','legs'],russian:['torso'],legcurl:['legs'],bridge_curl:['legs','glutes'],rdl:['legs','glutes'],goodmorning:['legs','glutes'],kickback:['glutes'],sumo:['legs','glutes'],abduct:['glutes'],adduct:['legs'],run:['legs'],jack:['legs','arms'],jump:['legs','arms'],bike:['legs'],rower:['legs','arms','torso'],reardelt:['arms'],reardelt0:['arms'],pullup:['arms','torso'],hang:['arms'],wallsit:['legs']};
 function render(f,front_){return front_?front(f):side(f);}
 function arrow(a,b,cls){
   var dx=b[0]-a[0],dy=b[1]-a[1],d=Math.sqrt(dx*dx+dy*dy);if(d<9)return '';
@@ -553,9 +605,9 @@ var MONTHS=['gener','febrer','març','abril','maig','juny','juliol','agost','set
 
 /* ---------- Objectius ---------- */
 var GOALS={
-  perdre:{label:'Perdre greix',sets:3,r:[15,15],rest:45,kcal:-450,prot:2.0,load:0.85},
-  tonificar:{label:'Tonificar',sets:3,r:[12,12],rest:60,kcal:0,prot:1.6,load:1},
-  muscul:{label:'Guanyar múscul',sets:4,r:[8,10],rest:90,kcal:250,prot:1.8,load:1.15}
+  perdre:{label:'Perdre greix',sets:3,r:[12,12],rest:45,kcal:-450,prot:2.0,load:0.85},
+  tonificar:{label:'Tonificar',sets:3,r:[10,10],rest:60,kcal:0,prot:1.6,load:1},
+  muscul:{label:'Guanyar múscul',sets:4,r:[6,8],rest:90,kcal:250,prot:1.8,load:1.15}
 };
 
 /* ---------- Rutina setmanal ----------
@@ -595,7 +647,7 @@ var PLAN={
  str:[['Pit a la porta','30 s per braç',60],['Espatlla creuada','30 s per braç',60],['Tríceps sobre el cap','30 s per braç',60],['Coll lateral','20 s per costat',40],['Rotació toràcica','30 s per costat',60],['Postura del nen','45 s',45]]},
 
 3:{short:'Recuperació',title:'Recuperació activa',mus:'Abdomen, core i cardio suau',
- wu:'Gat-camell, cercles de malucs i rotacions toràciques',over:{sets:3,r:[12,15],rest:30},
+ wu:'Gat-camell, cercles de malucs i rotacions toràciques',over:{sets:3,r:[10,12],rest:30},
  ex:[
   x('Planxa frontal',null,'Planxa frontal',{t:40,fg:'plank',fh:'plank',m:'Abdominal profund i estabilització lumbar',easy:'Genolls a terra.'}),
   x('Crunch invers al banc',null,'Crunch invers a terra',{fg:'revcrunch',fh:'revcrunch',m:'Abdominal inferior'}),
@@ -640,7 +692,7 @@ var PLAN={
  str:[['Dorsals agafat a un marc','30 s per costat',60],['Bíceps contra la paret','30 s per braç',60],['Posterior d’espatlla','30 s per braç',60],['Trapezi i coll','20 s per costat',40],['Gat-camell','45 s',45],['Postura del nen','45 s',45]]},
 
 6:{short:'Full body',title:'Full body (opcional)',optional:true,mus:'Cos complet, resistència muscular i abdomen',
- wu:'Esquats, flexions a la paret i rotacions de malucs',over:{sets:3,r:[15,15],rest:40},
+ wu:'Esquats, flexions a la paret i rotacions de malucs',over:{sets:3,r:[12,12],rest:40},
  ex:[
   x('Esquat goblet amb manuella',0.25,'Esquat amb motxilla al pit',{fg:'squat',fh:'squat',m:'Cames i glutis'}),
   x('Press de pit amb manuelles',0.15,'Flexions',{each:true,fg:'bench',fh:'pushup',m:'Pit i tríceps',easy:'Genolls a terra o mans sobre el sofà.'}),
@@ -661,6 +713,78 @@ function v(n,f,o){var r={n:n,f:f};if(o)for(var k in o)r[k]=o[k];return r;}
 var BODY={"Esquat a la Smith o a la màquina hack": [["Esquat amb pes corporal i pausa de 2 s a baix", "squat"], null], "Premsa de cames": [["Esquat búlgar amb el peu de darrere sobre un banc", "bulgarian"], null], "Hip thrust amb barra o a la màquina": [["Hip thrust a una cama amb l’esquena al banc", "hipthrust"], null], "Patada de glutis a la politja": [["Patada de glutis a quatre grapes", "kickback"], null], "Extensió de quàdriceps a la màquina": [["Esquat isomètric contra la paret", "wallsit", {"t": 40}], ["Esquat isomètric contra la paret", "wallsit", {"t": 40}]], "Gambades amb manuelles": [["Gambades caminant amb pes corporal", "lunge"], null], "Elevació de talons a la premsa": [["Elevacions de talons a una cama sobre un escaló", "calf"], ["Elevacions de talons a una cama sobre un escaló", "calf"]], "Elevació de talons asseguda a la màquina": [["Elevacions de talons dret amb pausa de 2 s a dalt", "calf"], ["Elevacions de talons dret amb pausa de 2 s a dalt", "calf"]], "Press de pit amb manuelles al banc pla": [["Flexions", "pushup"], null], "Press inclinat amb manuelles": [["Flexions amb els peus elevats sobre el banc", "pushup_decline"], null], "Press d’espatlles amb manuelles assegut": [["Flexions en V (cul amunt)", "pike"], null], "Elevacions laterals amb manuelles": [["Planxa amb toc d’espatlla", "plank", {"t": 30}], ["Planxa amb toc d’espatlla", "plank", {"t": 30}]], "Elevacions laterals a la politja": [["Flexions en V amb pausa de 2 s a baix", "pike"], ["Flexions en V amb pausa de 2 s a baix", "pike"]], "Obertures a la màquina pec-deck": [["Flexions amb les mans més separades", "pushup"], ["Flexions amb les mans més separades", "pushup"]], "Creuaments a la politja": [["Flexions lentes (3 s baixant)", "pushup"], ["Flexions lentes (3 s baixant)", "pushup"]], "Extensió de tríceps a la politja": [["Fons de tríceps al banc", "dips"], null], "Press francès amb manuelles": [["Flexions de diamant (mans juntes)", "pushup"], null], "Rotació russa amb disc": [["Rotació russa sense pes", "russian"], ["Rotació russa sense pes", "russian"]], "Pes mort romanès amb barra o manuelles": [["Pes mort romanès a una cama sense pes", "goodmorning"], ["Pes mort romanès a una cama sense pes", "goodmorning"]], "Curl femoral estirat a la màquina": [["Curl femoral amb tovallola lliscant a terra", "bridge_curl"], null], "Hip thrust amb una manuella": [["Pont de glutis amb pausa de 2 s a dalt", "bridge"], null], "Gambada enrere amb manuelles": [["Gambada enrere amb pes corporal", "lunge"], null], "Màquina d’abductors": [["Abduccions laterals tombat de costat", "abduct"], ["Abduccions laterals tombat de costat", "abduct"]], "Esquat sumo amb una manuella": [["Esquat sumo amb pes corporal i pausa de 2 s", "sumo"], ["Esquat sumo amb pes corporal i pausa de 2 s", "sumo"]], "Màquina d’adductors": [["Pont de glutis amb un coixí entre els genolls", "bridge"], null], "Jalón al pit a la politja": [["Dominades o dominades assistides a la màquina", "pullup"], ["Remada australiana sota una taula resistent", "rowinv"]], "Remada asseguda a la politja": [["Remada australiana sota una barra baixa", "rowinv"], ["Superman amb pausa de 2 s", "superman"]], "Remada amb una mà amb manuella": [["Superman amb pausa de 2 s", "superman"], null], "Remada al banc inclinat amb manuelles": [["Y-T-W tombat boca avall", "superman"], ["Y-T-W tombat boca avall", "superman"]], "Face pull a la politja": [["Retracció d’escàpules penjat de la barra", "hang"], ["W tombat boca avall (retracció d’escàpules)", "superman"]], "Ocells a la pec-deck inversa": [["Obertura de braços inclinat, sense pes", "reardelt0"], ["Obertura de braços inclinat, sense pes", "reardelt0"]], "Encongiments amb manuelles": [["Encongiments d’espatlles amb pausa de 3 s", "shrug0"], ["Encongiments d’espatlles amb pausa de 3 s", "shrug0"]], "Curl de bíceps amb manuelles": [["Dominades amb agafada supinada (chin-up) o assistides", "pullup"], ["Curl isomètric amb una tovallola sota el peu", "curl0"]], "Curl martell amb manuelles": [["Penjar-se de la barra (avantbraços)", "hang", {"t": 30}], ["Planxa alta amb mans actives", "plank", {"t": 30}]], "Esquat goblet amb manuella": [["Esquat amb pes corporal", "squat"], ["Esquat amb pes corporal", "squat"]], "Press de pit amb manuelles": [["Flexions", "pushup"], null], "Pes mort romanès lleuger": [["Bom dia amb pes corporal", "goodmorning"], ["Bom dia amb pes corporal", "goodmorning"]], "Press d’espatlles amb manuelles": [["Flexions en V", "pike"], null], "Gambades caminant amb manuelles": [["Gambades caminant amb pes corporal", "lunge"], null]};
 (function(){function ap(e){var b=BODY[e.g.n];if(b){if(b[0])e.bg=v(b[0][0],b[0][1],b[0][2]);if(b[1])e.bh=v(b[1][0],b[1][1],b[1][2]);}if(e.alt)ap(e.alt);}
   for(var d in PLAN){if(PLAN[d].ex)PLAN[d].ex.forEach(ap);}})();
+/* ---------- Banc d'exercicis extra: cada setmana en rotem uns quants ---------- */
+function y(cat,g,gb,h,fg,fh,m,bg,bh,o){
+  var r=x(g,gb,h,{fg:fg,fh:fh,m:m,cat:cat,bg:v(bg[0],bg[1],bg[2]),bh:v(bh[0],bh[1],bh[2])});
+  if(o)for(var k in o)r[k]=o[k];return r;
+}
+var TAGS={1:['quad','quad','glute','quad','leg','calf','calf'],2:['chest','chest','shoulder','shoulder','chest','tri','tri'],
+ 3:['plank','low','stab','plank','stab','rot','rot'],4:['ham','ham','glute','leg','hip','hip','hip'],
+ 5:['back','back','back','rear','rear','rear','bi','bi'],6:['legs','push','pull','hinge','push','legs','core','core','core']};
+var EXTRA={
+1:[
+ y('leg','Step-up amb manuelles a un banc',0.2,'Step-up a un escaló o cadira resistent','stepup','stepup','Quàdriceps i glutis',['Step-up a un escaló o cadira resistent','stepup'],['Step-up a un escaló o cadira resistent','stepup'],{each:true}),
+ y('quad','Esquat amb salt',0,'Esquat amb salt','jumpsquat','jumpsquat','Quàdriceps i potència',['Esquat amb salt (o a les puntes si prefereixes sense impacte)','jumpsquat'],['Esquat amb salt (o a les puntes si prefereixes sense impacte)','jumpsquat'],{easy:'Sense salt: puja a les puntes dels peus.'}),
+ y('quad','Esquat frontal amb manuella (goblet)',0.25,'Esquat lent amb pes corporal','squat','squat','Quàdriceps i abdomen',['Esquat lent: 3 s baixant i 1 s pujant','squat'],['Esquat lent: 3 s baixant i 1 s pujant','squat']),
+ y('glute','Pont de glutis amb marxa',0,'Pont de glutis amb marxa','glutemarch','glutemarch','Gluti major i estabilitat',['Pont de glutis amb marxa (alterna els peus)','glutemarch'],['Pont de glutis amb marxa (alterna els peus)','glutemarch']),
+ y('glute','Hip thrust a una cama al banc',0.3,'Pont de glutis a una cama amb pausa','hipthrust','bridge1','Gluti major',['Pont de glutis a una cama amb pausa de 2 s','bridge1'],['Pont de glutis a una cama amb pausa de 2 s','bridge1']),
+ y('calf','Elevació de talons a una cama a l’escaló',0.2,'Elevacions de talons a una cama','calf','calf','Bessons',['Elevacions de talons a una cama','calf'],['Elevacions de talons a una cama','calf'],{each:true}),
+ y('leg','Gambada lateral amb manuella',0.2,'Gambada lateral','lateral','lateral','Cuixes, glutis i adductors',['Gambada lateral amb pes corporal','lateral'],['Gambada lateral amb pes corporal','lateral'],{each:true})
+],
+2:[
+ y('chest','Press de pit a la màquina',0.3,'Flexions amb les mans elevades','bench','pushup','Pectoral i tríceps',['Flexions amb les mans sobre un banc o una taula','pushup',{note:'Com més alt el suport, més fàcil.'}],['Flexions amb les mans sobre un banc o una taula','pushup',{note:'Com més alt el suport, més fàcil.'}]),
+ y('chest','Flexions arquer (un braç més estirat)',0,'Flexions arquer (un braç més estirat)','pushup','pushup','Pectoral i deltoide anterior',['Flexions arquer (un braç més estirat)','pushup',{note:'Baixa cap a una mà amb l’altre braç estès.'}],['Flexions arquer (un braç més estirat)','pushup',{note:'Baixa cap a una mà amb l’altre braç estès.'}]),
+ y('shoulder','Press Arnold amb manuelles',0.12,'Press Arnold amb ampolles','ohp','ohp','Deltoides',['Flexions en V amb els peus elevats','pike'],['Flexions en V amb els peus elevats','pike'],{each:true}),
+ y('shoulder','Elevació frontal amb disc',0.1,'Elevació frontal amb ampolles','frontraise','frontraise','Deltoide anterior',['Planxa amb toc d’espatlla','shouldertap',{t:30}],['Planxa amb toc d’espatlla','shouldertap',{t:30}]),
+ y('shoulder','Remada al mentó amb barra',0.2,'Remada al mentó amb ampolles','uprightrow','uprightrow','Deltoide lateral i trapezi',['Elevacions en Y tombat boca avall','superman'],['Elevacions en Y tombat boca avall','superman']),
+ y('tri','Fons a la màquina',0.4,'Fons de tríceps al banc','dips','dips','Tríceps',['Fons de tríceps amb els peus elevats','dips'],['Fons de tríceps amb els peus elevats','dips']),
+ y('tri','Extensió de tríceps sobre el cap amb manuella',0.15,'Extensió de tríceps sobre el cap amb una garrafa','skull','skull','Tríceps (cap llarg)',['Fons de tríceps amb una cama aixecada','dips'],['Fons de tríceps amb una cama aixecada','dips']),
+ y('tri','Patada de tríceps amb manuella',0.06,'Patada de tríceps amb ampolles','tricepkick','tricepkick','Tríceps',['Flexions amb els colzes enganxats al cos','pushup'],['Flexions amb els colzes enganxats al cos','pushup'],{each:true}),
+ y('chest','Creuaments a la politja baixos',0.1,'Obertures tombat amb ampolles','fly','fly','Pectoral superior',['Flexions amb pausa de 2 s a baix','pushup'],['Flexions amb pausa de 2 s a baix','pushup'])
+],
+3:[
+ y('low','Elevació de cames tombat',0,'Elevació de cames tombat','legraise','legraise','Abdomen inferior',['Elevació de cames tombat','legraise'],['Elevació de cames tombat','legraise']),
+ y('low','Flutter kicks (tisores)',0,'Flutter kicks (tisores)','flutter','flutter','Abdomen inferior',['Flutter kicks (tisores)','flutter',{t:30}],['Flutter kicks (tisores)','flutter',{t:30}],{t:30}),
+ y('plank','Hollow hold (posició de banana)',0,'Hollow hold (posició de banana)','hollow','hollow','Abdomen profund',['Hollow hold (posició de banana)','hollow',{t:25}],['Hollow hold (posició de banana)','hollow',{t:25}],{t:25}),
+ y('low','V-up',0,'V-up','vup','vup','Abdomen complet',['V-up','vup'],['V-up','vup']),
+ y('plank','Planxa amb toc d’espatlla',0,'Planxa amb toc d’espatlla','shouldertap','shouldertap','Core i espatlles',['Planxa amb toc d’espatlla','shouldertap',{t:30}],['Planxa amb toc d’espatlla','shouldertap',{t:30}],{t:30}),
+ y('low','Elevació de genolls penjat a la barra',0,'Elevació de genolls a terra','hangraise','revcrunch','Abdomen inferior',['Elevació de genolls penjat a la barra','hangraise'],['Crunch invers amb pausa d’1 s','revcrunch']),
+ y('stab','Pont de glutis amb marxa',0,'Pont de glutis amb marxa','glutemarch','glutemarch','Glutis i estabilitat',['Pont de glutis amb marxa (alterna els peus)','glutemarch'],['Pont de glutis amb marxa (alterna els peus)','glutemarch']),
+ y('stab','Superman alternat',0,'Superman alternat','birddog','birddog','Esquena baixa i glutis',['Bird-dog amb pausa de 2 s','birddog'],['Bird-dog amb pausa de 2 s','birddog'])
+],
+4:[
+ y('ham','Pes mort a una cama amb manuella',0.15,'Pes mort a una cama sense pes','goodmorning','goodmorning','Isquios i glutis',['Pes mort a una cama sense pes','goodmorning'],['Pes mort a una cama sense pes','goodmorning'],{each:true}),
+ y('ham','Curl femoral assegut a la màquina',0.3,'Curl femoral amb tovallola','legcurl','bridge_curl','Isquios',['Pont de glutis amb curl de talons','bridge_curl'],['Pont de glutis amb curl de talons','bridge_curl']),
+ y('ham','Bom dia amb barra',0.3,'Bom dia amb pausa de 2 s','rdl','goodmorning','Isquios i lumbars',['Bom dia amb pausa de 2 s','goodmorning'],['Bom dia amb pausa de 2 s','goodmorning']),
+ y('glute','Pont de glutis amb marxa',0,'Pont de glutis amb marxa','glutemarch','glutemarch','Gluti major',['Pont de glutis amb marxa (alterna els peus)','glutemarch'],['Pont de glutis amb marxa (alterna els peus)','glutemarch']),
+ y('glute','Patada de burro (donkey kick) amb goma',0.1,'Patada de burro (donkey kick)','kickback','kickback','Gluti major',['Patada de glutis amb pausa de 2 s','kickback'],['Patada de glutis amb pausa de 2 s','kickback']),
+ y('leg','Salts laterals de patinador',0,'Salts laterals de patinador','skater','skater','Glutis, cuixes i equilibri',['Salts laterals de patinador (o passes laterals si prefereixes sense impacte)','skater'],['Salts laterals de patinador (o passes laterals si prefereixes sense impacte)','skater']),
+ y('leg','Gambada enrere amb pausa',0.15,'Gambada enrere amb pausa de 2 s','lunge','lunge','Glutis i quàdriceps',['Gambada enrere amb pausa de 2 s','lunge'],['Gambada enrere amb pausa de 2 s','lunge'],{each:true}),
+ y('hip','Abducció a la politja',0.1,'Abduccions laterals de peu amb pausa','abduct','abduct','Gluti mitjà',['Abduccions laterals de peu amb pausa','abduct'],['Abduccions laterals de peu amb pausa','abduct']),
+ y('hip','Esquat sumo amb pausa',0.2,'Esquat sumo amb pausa de 2 s','sumo','sumo','Adductors i glutis',['Esquat sumo amb pausa de 2 s','sumo'],['Esquat sumo amb pausa de 2 s','sumo'])
+],
+5:[
+ y('back','Jalón amb agafada neutra',0.5,'Remada australiana amb agafada estreta','pulldown','rowinv','Dorsal ample',['Remada australiana amb agafada estreta','rowinv'],['Remada australiana amb agafada estreta','rowinv']),
+ y('back','Remada a la màquina amb el pit recolzat',0.4,'Remada australiana amb els peus elevats','row_seated','rowinv','Dorsal i romboides',['Remada australiana amb els peus elevats','rowinv'],['Remada australiana amb els peus elevats','rowinv']),
+ y('back','Extensió lumbar al banc romà',0,'Superman amb pausa de 3 s','backext','superman','Esquena baixa i glutis',['Extensió lumbar al banc romà','backext'],['Superman amb pausa de 3 s','superman']),
+ y('back','Superman alternat',0,'Bird-dog alternat','birddog','birddog','Esquena i glutis',['Bird-dog amb pausa de 2 s','birddog'],['Bird-dog amb pausa de 2 s','birddog']),
+ y('rear','Elevació posterior a la politja',0.08,'Elevacions en T tombat boca avall','reardelt','superman','Deltoide posterior',['Elevacions en T tombat boca avall','superman'],['Elevacions en T tombat boca avall','superman']),
+ y('rear','Retracció d’escàpules a la politja',0.2,'Retracció d’escàpules tombat','facepull','superman','Romboides i deltoide posterior',['Retracció d’escàpules tombat boca avall','superman'],['Retracció d’escàpules tombat boca avall','superman']),
+ y('bi','Curl amb barra Z',0.2,'Curl amb ampolles','curl','curl','Bíceps',['Penjar-se de la barra amb agafada supinada','hang',{t:25}],['Curl isomètric amb tovallola','curl0']),
+ y('bi','Curl concentrat',0.1,'Curl concentrat amb garrafa','curl','curl','Bíceps',['Curl isomètric amb tovallola','curl0'],['Curl isomètric amb tovallola','curl0'])
+],
+6:[
+ y('core','Burpees',0,'Burpees','burpee','burpee','Cos complet',['Burpees (sense flexió si costa)','burpee'],['Burpees (sense flexió si costa)','burpee'],{easy:'Camina els peus enrere i endavant, sense salt.'}),
+ y('core','Genolls alts (high knees)',0,'Genolls alts (high knees)','highknees','highknees','Cardio i cames',['Genolls alts (high knees)','highknees',{t:30}],['Genolls alts (high knees)','highknees',{t:30}],{t:30}),
+ y('legs','Esquat amb salt',0,'Esquat amb salt','jumpsquat','jumpsquat','Cames i potència',['Esquat amb salt (o a les puntes)','jumpsquat'],['Esquat amb salt (o a les puntes)','jumpsquat']),
+ y('push','Flexions amb toc d’espatlla',0,'Flexions amb toc d’espatlla','shouldertap','shouldertap','Pit, tríceps i core',['Flexions amb toc d’espatlla','pushup'],['Flexions amb toc d’espatlla','pushup']),
+ y('pull','Remada amb barra',0.3,'Remada australiana','row_bent','rowinv','Esquena i bíceps',['Remada australiana sota una barra baixa o taula','rowinv'],['Remada australiana sota una barra baixa o taula','rowinv']),
+ y('hinge','Bom dia amb pausa',0.2,'Bom dia amb pausa de 2 s','rdl','goodmorning','Isquios i lumbars',['Bom dia amb pausa de 2 s','goodmorning'],['Bom dia amb pausa de 2 s','goodmorning']),
+ y('legs','Gambada lateral',0.15,'Gambada lateral','lateral','lateral','Cuixes i glutis',['Gambada lateral amb pes corporal','lateral'],['Gambada lateral amb pes corporal','lateral'],{each:true}),
+ y('core','Planxa lateral',0,'Planxa lateral','sideplank','sideplank','Oblics',['Planxa lateral','sideplank',{t:30}],['Planxa lateral','sideplank',{t:30}],{t:30}),
+ y('core','Hollow hold',0,'Hollow hold','hollow','hollow','Abdomen',['Hollow hold (posició de banana)','hollow',{t:25}],['Hollow hold (posició de banana)','hollow',{t:25}],{t:25})
+]};
+(function(){for(var d in PLAN){PLAN[d].n=+d;PLAN[d].ex.forEach(function(e,i){e.cat=(TAGS[d]||[])[i]||'x';});}})();
 var PHASES=['Base','Més repeticions','Més sèries','Descàrrega'];
 var PHASE_TXT=[
  'Setmana base: aprèn bé la tècnica i troba una càrrega còmoda.',
@@ -732,28 +856,104 @@ ERRS.shrug0='Fer cercles amb les espatlles.';
 ERRS.curl0='Deixar que el peu s’alci o balancejar el cos.';
 
 /* ---------- Dieta ---------- */
+/* k: V=vegetarià, G=vegà, S=sense gluten, L=sense lactis (el vegà també és vegetarià i sense lactis) */
+function o(t,k,i){return {t:t,k:k,i:i};}
+var DIETS=[['tot','Tot'],['V','Vegetarià'],['G','Vegà'],['S','Sense gluten'],['L','Sense lactis']];
+var KLAB={V:'Vegetarià',G:'Vegà',S:'Sense gluten',L:'Sense lactis'};
 var MEALS=[
  {n:'Esmorzar',p:0.25,t:'8:00',o:[
-  {t:'Civada cremosa amb fruita',i:[['Flocs de civada',60,'g'],['Llet o beguda vegetal',250,'ml'],['Plàtan',1,'u'],['Nous',15,'g']]},
-  {t:'Torrada amb tomàquet i ou',i:[['Pa integral',80,'g'],['Tomàquet ratllat',80,'g'],['Oli d’oliva verge',10,'ml'],['Ous',2,'u'],['Taronja',1,'u']]},
-  {t:'Iogurt amb fruits vermells',i:[['Iogurt grec natural',200,'g'],['Fruits vermells',100,'g'],['Muesli sense sucre',40,'g'],['Ametlles',15,'g']]}]},
+  o('Civada cremosa amb llet i plàtan','V',[['Flocs de civada',60,'g'],['Llet',250,'ml'],['Plàtan',1,'u'],['Nous',15,'g']]),
+  o('Civada amb beguda de soja i plàtan','VGL',[['Flocs de civada',60,'g'],['Beguda de soja',250,'ml'],['Plàtan',1,'u'],['Nous',15,'g']]),
+  o('Torrada amb tomàquet i ou','VL',[['Pa integral',80,'g'],['Tomàquet ratllat',80,'g'],['Oli d’oliva verge',10,'ml'],['Ous',2,'u'],['Taronja',1,'u']]),
+  o('Iogurt amb fruits vermells i muesli','V',[['Iogurt grec natural',200,'g'],['Fruits vermells',100,'g'],['Muesli sense sucre',40,'g'],['Ametlles',15,'g']]),
+  o('Iogurt grec amb fruits vermells i nous','VS',[['Iogurt grec natural',250,'g'],['Fruits vermells',120,'g'],['Nous',25,'g'],['Mel',5,'g']]),
+  o('Truita francesa amb torrada i taronja','VL',[['Ous',3,'u'],['Pa integral',60,'g'],['Taronja',1,'u'],['Oli d’oliva verge',8,'ml']]),
+  o('Torrada d’alvocat amb ou','VL',[['Pa integral',70,'g'],['Alvocat',70,'g'],['Ou',2,'u'],['Tomàquets cherry',60,'g']]),
+  o('Torrada d’alvocat i tomàquet','VGL',[['Pa integral',80,'g'],['Alvocat',80,'g'],['Tomàquet',80,'g'],['Llavors de gira-sol',15,'g'],['Pera',1,'u']]),
+  o('Pancakes de civada i plàtan','VL',[['Flocs de civada',60,'g'],['Plàtan',1,'u'],['Ou',1,'u'],['Canyella',1,'g'],['Fruits vermells',80,'g']]),
+  o('Bol de plàtan i fruits vermells amb llavors','VGLS',[['Plàtan congelat',1,'u'],['Fruits vermells',120,'g'],['Beguda de soja',150,'ml'],['Llavors de chia',10,'g'],['Ametlles',20,'g']]),
+  o('Pa amb formatge fresc i pernil de gall dindi','L',[['Pa integral',70,'g'],['Formatge fresc',60,'g'],['Pernil de gall dindi',50,'g'],['Taronja',1,'u']]),
+  o('Torrada amb tonyina i tomàquet','L',[['Pa integral',70,'g'],['Tonyina al natural',80,'g'],['Tomàquet',80,'g'],['Oli d’oliva verge',8,'ml'],['Fruita',1,'u']]),
+  o('Porridge de quinoa amb pera','VGLS',[['Quinoa (en cru)',50,'g'],['Beguda vegetal',250,'ml'],['Pera',1,'u'],['Nous',20,'g'],['Canyella',1,'g']]),
+  o('Iogurt de soja amb fruita i nous','VGLS',[['Iogurt de soja natural',250,'g'],['Fruita de temporada',1,'u'],['Nous',20,'g'],['Llavors de lli',10,'g']]),
+  o('Ous remenats amb espinacs i pa sense gluten','VSL',[['Ous',3,'u'],['Espinacs',80,'g'],['Pa sense gluten',60,'g'],['Oli d’oliva verge',8,'ml'],['Fruita',1,'u']]),
+  o('Tofu remenat amb torrada','VGL',[['Tofu',150,'g'],['Pa integral',60,'g'],['Tomàquet',80,'g'],['Cúrcuma',1,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Formatge cottage amb fruita i nous','VS',[['Formatge cottage',200,'g'],['Fruita de temporada',1,'u'],['Nous',20,'g'],['Mel',5,'g']])]},
  {n:'Mig matí',p:0.10,t:'11:00',o:[
-  {t:'Fruita i fruits secs',i:[['Poma o pera',1,'u'],['Ametlles o avellanes',20,'g']]},
-  {t:'Formatge fresc amb torrada',i:[['Formatge fresc batut',100,'g'],['Pa integral',30,'g'],['Mel',5,'g']]},
-  {t:'Batut de iogurt',i:[['Iogurt natural',125,'g'],['Fruita',1,'u'],['Flocs de civada',20,'g']]}]},
+  o('Fruita i fruits secs','VGLS',[['Poma o pera',1,'u'],['Ametlles o avellanes',20,'g']]),
+  o('Formatge fresc amb torrada i mel','V',[['Formatge fresc batut',100,'g'],['Pa integral',30,'g'],['Mel',5,'g']]),
+  o('Batut de iogurt amb fruita i civada','V',[['Iogurt natural',125,'g'],['Fruita',1,'u'],['Flocs de civada',20,'g']]),
+  o('Hummus amb pastanaga','VGLS',[['Hummus',60,'g'],['Pastanaga',150,'g']]),
+  o('Iogurt natural amb nous i mel','VS',[['Iogurt natural',125,'g'],['Nous',15,'g'],['Mel',5,'g']]),
+  o('Plàtan amb mantega de cacauet','VGLS',[['Plàtan',1,'u'],['Mantega de cacauet',15,'g']]),
+  o('Mitja torrada amb alvocat','VGL',[['Pa integral',35,'g'],['Alvocat',50,'g'],['Sal i pebre',1,'g']]),
+  o('Ou dur amb tomàquets cherry','VSL',[['Ou dur',1,'u'],['Tomàquets cherry',100,'g'],['Oli d’oliva verge',5,'ml']]),
+  o('Barreta casolana de dàtils i fruits secs','VGLS',[['Dàtils',40,'g'],['Ametlles',20,'g'],['Coco ratllat',5,'g']]),
+  o('Kèfir amb fruits vermells','VS',[['Kèfir',200,'ml'],['Fruits vermells',80,'g']]),
+  o('Mandarines i nous','VGLS',[['Mandarines',2,'u'],['Nous',20,'g']]),
+  o('Edamame amb sal','VGLS',[['Edamame',100,'g']]),
+  o('Torrades d’arròs amb pernil de gall dindi','SL',[['Torrades d’arròs',30,'g'],['Pernil de gall dindi',40,'g']]),
+  o('Formatge curat i raïm','VS',[['Formatge curat',30,'g'],['Raïm',100,'g']])]},
  {n:'Dinar',p:0.35,t:'14:00',o:[
-  {t:'Arròs integral amb pollastre i verdura',i:[['Arròs integral (en cru)',80,'g'],['Pit de pollastre',150,'g'],['Verdura saltada',200,'g'],['Oli d’oliva verge',10,'ml']]},
-  {t:'Llenties estofades amb ou',i:[['Llenties cuites',250,'g'],['Verdures del sofregit',150,'g'],['Ou dur',1,'u'],['Pa integral',40,'g'],['Oli d’oliva verge',10,'ml']]},
-  {t:'Pasta integral amb tonyina',i:[['Pasta integral (en cru)',80,'g'],['Tonyina al natural',120,'g'],['Salsa de tomàquet casolana',120,'g'],['Amanida variada',150,'g'],['Oli d’oliva verge',10,'ml']]}]},
+  o('Arròs integral amb pollastre i verdura','SL',[['Arròs integral (en cru)',80,'g'],['Pit de pollastre',150,'g'],['Verdura saltada',200,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Llenties estofades amb ou','VL',[['Llenties cuites',250,'g'],['Verdures del sofregit',150,'g'],['Ou dur',1,'u'],['Pa integral',40,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Pasta integral amb tonyina i tomàquet','L',[['Pasta integral (en cru)',80,'g'],['Tonyina al natural',120,'g'],['Salsa de tomàquet casolana',120,'g'],['Amanida variada',150,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Cigrons amb espinacs','VGLS',[['Cigrons cuits',250,'g'],['Espinacs',200,'g'],['Pa sense gluten',40,'g'],['Oli d’oliva verge',12,'ml']]),
+  o('Quinoa amb verdures i pollastre','SL',[['Quinoa (en cru)',70,'g'],['Pit de pollastre',140,'g'],['Verdures al forn',200,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Truita de patata amb amanida','VSL',[['Ous',3,'u'],['Patata',150,'g'],['Ceba',30,'g'],['Amanida',150,'g'],['Oli d’oliva verge',12,'ml']]),
+  o('Bol d’arròs, salmó i alvocat','SL',[['Arròs (en cru)',70,'g'],['Salmó',130,'g'],['Alvocat',60,'g'],['Cogombre i pastanaga',120,'g']]),
+  o('Fajitas de gall dindi amb verdures','L',[['Tortilles de blat integral',2,'u'],['Gall dindi a tires',140,'g'],['Pebrot i ceba',150,'g'],['Iogurt natural',50,'g']]),
+  o('Amanida de cigrons, tonyina i ou','SL',[['Cigrons cuits',150,'g'],['Tonyina al natural',100,'g'],['Ou dur',1,'u'],['Tomàquet i enciam',200,'g'],['Oli d’oliva verge',12,'ml']]),
+  o('Pollastre al forn amb patates i verdures','SL',[['Cuixa de pollastre sense pell',180,'g'],['Patata',200,'g'],['Verdures al forn',200,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Hamburguesa de vedella magra amb patata i amanida','SL',[['Hamburguesa de vedella magra',150,'g'],['Patata al forn',200,'g'],['Amanida',150,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Macarrons integrals amb tomàquet i formatge','V',[['Macarrons integrals (en cru)',85,'g'],['Salsa de tomàquet casolana',150,'g'],['Formatge ratllat',25,'g'],['Amanida',150,'g']]),
+  o('Curri de cigrons amb arròs','VGLS',[['Cigrons cuits',200,'g'],['Llet de coco lleugera',100,'ml'],['Tomàquet triturat',100,'g'],['Arròs (en cru)',70,'g'],['Espinacs',100,'g']]),
+  o('Tofu saltat amb verdures i arròs','VGLS',[['Tofu ferm',180,'g'],['Arròs (en cru)',70,'g'],['Verdures saltades',200,'g'],['Tamari',10,'ml']]),
+  o('Cuscús integral amb verdures i cigrons','VGL',[['Cuscús integral (en cru)',70,'g'],['Cigrons cuits',120,'g'],['Verdures al forn',200,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Salmó al forn amb moniato i bròquil','SL',[['Salmó',150,'g'],['Moniato',200,'g'],['Bròquil',200,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Bacallà amb samfaina i patata','SL',[['Bacallà dessalat',180,'g'],['Samfaina',200,'g'],['Patata cuita',150,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Llenties amb verdures i arròs','VGLS',[['Llenties cuites',250,'g'],['Verdures del sofregit',150,'g'],['Arròs (en cru)',40,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Amanida de pasta integral amb tonyina','L',[['Pasta integral (en cru)',80,'g'],['Tonyina al natural',100,'g'],['Blat de moro',50,'g'],['Tomàquet i olives',150,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Hamburguesa vegetal amb patates i amanida','VGL',[['Hamburguesa vegetal',150,'g'],['Patata al forn',200,'g'],['Amanida',150,'g'],['Oli d’oliva verge',10,'ml']])]},
  {n:'Berenar',p:0.10,t:'17:30',o:[
-  {t:'Entrepà lleuger',i:[['Pa integral',50,'g'],['Pernil de gall dindi',50,'g'],['Tomàquet',60,'g']]},
-  {t:'Iogurt i fruita',i:[['Iogurt natural',125,'g'],['Fruita de temporada',1,'u'],['Nous',15,'g']]},
-  {t:'Hummus amb verdura',i:[['Hummus',60,'g'],['Pastanaga i api',150,'g'],['Pa de pita integral',40,'g']]}]},
+  o('Entrepà lleuger de gall dindi','L',[['Pa integral',50,'g'],['Pernil de gall dindi',50,'g'],['Tomàquet',60,'g']]),
+  o('Iogurt i fruita','VS',[['Iogurt natural',125,'g'],['Fruita de temporada',1,'u'],['Nous',15,'g']]),
+  o('Hummus amb verdura i pita','VGL',[['Hummus',60,'g'],['Pastanaga i api',150,'g'],['Pa de pita integral',40,'g']]),
+  o('Fruita i nous','VGLS',[['Fruita de temporada',1,'u'],['Nous',20,'g']]),
+  o('Torrada amb formatge fresc i tomàquet','V',[['Pa integral',40,'g'],['Formatge fresc',60,'g'],['Tomàquet',60,'g']]),
+  o('Batut de llet i plàtan','VS',[['Llet',200,'ml'],['Plàtan',1,'u'],['Canyella',1,'g']]),
+  o('Formatge fresc batut amb fruita','VS',[['Formatge fresc batut',150,'g'],['Fruita',1,'u']]),
+  o('Torrades d’arròs amb mantega de cacauet i plàtan','VGLS',[['Torrades d’arròs',30,'g'],['Mantega de cacauet',15,'g'],['Plàtan',0.5,'u']]),
+  o('Ou dur i fruita','VSL',[['Ou dur',1,'u'],['Fruita de temporada',1,'u']]),
+  o('Pastanagues i api amb guacamole','VGLS',[['Pastanaga i api',200,'g'],['Guacamole',50,'g']]),
+  o('Iogurt de soja amb fruits secs','VGLS',[['Iogurt de soja natural',200,'g'],['Ametlles',15,'g']]),
+  o('Mini entrepà de tonyina','L',[['Pa integral',40,'g'],['Tonyina al natural',50,'g'],['Tomàquet',60,'g']]),
+  o('Crispetes de blat de moro i fruita','VGLS',[['Crispetes sense sucre',25,'g'],['Fruita de temporada',1,'u']]),
+  o('Smoothie verd','VGLS',[['Espinacs',50,'g'],['Plàtan',1,'u'],['Poma',1,'u'],['Beguda vegetal',150,'ml']])]},
  {n:'Sopar',p:0.20,t:'21:00',o:[
-  {t:'Lluç amb patata i verdura',i:[['Lluç o altre peix blanc',180,'g'],['Patata cuita',150,'g'],['Verdura al vapor',200,'g'],['Oli d’oliva verge',10,'ml']]},
-  {t:'Truita amb espinacs',i:[['Ous',3,'u'],['Espinacs',100,'g'],['Pa integral',40,'g'],['Amanida',150,'g'],['Oli d’oliva verge',10,'ml']]},
-  {t:'Crema de verdures amb salmó',i:[['Crema de verdures',300,'g'],['Salmó',140,'g'],['Pa integral',30,'g']]}]}
+  o('Lluç amb patata i verdura','SL',[['Lluç o altre peix blanc',180,'g'],['Patata cuita',150,'g'],['Verdura al vapor',200,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Truita amb espinacs','VL',[['Ous',3,'u'],['Espinacs',100,'g'],['Pa integral',40,'g'],['Amanida',150,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Crema de verdures amb salmó','L',[['Crema de verdures',300,'g'],['Salmó',140,'g'],['Pa integral',30,'g']]),
+  o('Pollastre a la planxa amb amanida i moniato','SL',[['Pit de pollastre',160,'g'],['Moniato al forn',150,'g'],['Amanida',200,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Amanida completa amb ou, tonyina i blat de moro','SL',[['Enciam i tomàquet',250,'g'],['Ou dur',2,'u'],['Tonyina al natural',80,'g'],['Blat de moro',40,'g'],['Oli d’oliva verge',10,'ml']]),
+  o('Brou de verdures amb ou escalfat','VSL',[['Brou de verdures',300,'ml'],['Ous',2,'u'],['Verdures a daus',200,'g'],['Arròs (en cru)',30,'g']]),
+  o('Tofu a la planxa amb verdures i arròs','VGLS',[['Tofu ferm',180,'g'],['Verdures al vapor',250,'g'],['Arròs (en cru)',50,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Truita de carbassó amb formatge','VS',[['Ous',3,'u'],['Carbassó',150,'g'],['Formatge ratllat',25,'g'],['Amanida',150,'g']]),
+  o('Dorada al forn amb verdures','SL',[['Dorada',200,'g'],['Verdures al forn',250,'g'],['Patata',100,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Crema de carbassa amb llavors i torrada','VGL',[['Crema de carbassa',300,'g'],['Pa integral',50,'g'],['Llavors de carbassa',15,'g'],['Hummus',40,'g']]),
+  o('Hamburguesa de pollastre amb amanida','SL',[['Hamburguesa de pollastre casolana',170,'g'],['Amanida',200,'g'],['Patata al vapor',120,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Verdures saltades amb gambes','SL',[['Gambes pelades',160,'g'],['Verdures saltades',250,'g'],['Arròs (en cru)',40,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Wrap de pollastre i hummus','L',[['Tortilla de blat integral',2,'u'],['Pit de pollastre',120,'g'],['Hummus',40,'g'],['Enciam i tomàquet',100,'g']]),
+  o('Escalivada amb tonyina i pa','L',[['Escalivada',250,'g'],['Tonyina al natural',100,'g'],['Pa de pagès',50,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Ous al forn amb tomàquet (shakshuka)','VL',[['Ous',2,'u'],['Tomàquet triturat',200,'g'],['Pebrot i ceba',100,'g'],['Pa integral',40,'g']]),
+  o('Pit de gall dindi amb bròquil i patata','SL',[['Pit de gall dindi',160,'g'],['Bròquil',200,'g'],['Patata cuita',150,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Salmó amb espàrrecs i arròs','SL',[['Salmó',140,'g'],['Espàrrecs verds',150,'g'],['Arròs (en cru)',50,'g']]),
+  o('Amanida de quinoa amb alvocat i cigrons','VGLS',[['Quinoa (en cru)',50,'g'],['Cigrons cuits',100,'g'],['Alvocat',60,'g'],['Enciam i tomàquet',150,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Amanida de llenties amb alvocat','VGLS',[['Llenties cuites',200,'g'],['Alvocat',60,'g'],['Tomàquet i ceba',120,'g'],['Oli d’oliva verge',8,'ml']]),
+  o('Crema de bròquil amb pa torrat i hummus','VGL',[['Crema de bròquil',300,'g'],['Pa integral',50,'g'],['Hummus',50,'g']])]}
 ];
+function mealOK(o,diet){return diet==='tot'||!diet||o.k.indexOf(diet)>=0;}
+function mealAllowed(M,diet){var a=[];M.o.forEach(function(o,i){if(mealOK(o,diet))a.push(i);});return a.length?a:M.o.map(function(_,i){return i;});}
 
 /* ---------- Càlculs ---------- */
 function calc(P){
@@ -810,7 +1010,7 @@ function dayInfo(P,dateIso){
 }
 function weekDates(mon){var o=[],d=parse(mon);for(var i=0;i<7;i++){o.push(iso(d));d.setDate(d.getDate()+1);}return o;}
 
-if(typeof module!=='undefined'){module.exports={PLAN:PLAN,GOALS:GOALS,calc:calc,figId:figId,dayInfo:dayInfo,RESTS:RESTS,mondayOf:mondayOf,ERRS:ERRS,build:build,prog:prog};}
+if(typeof module!=='undefined'){module.exports={pickPool:pickPool,EXTRA:EXTRA,PLAN:PLAN,GOALS:GOALS,calc:calc,figId:figId,dayInfo:dayInfo,RESTS:RESTS,mondayOf:mondayOf,ERRS:ERRS,build:build,prog:prog};}
 if(typeof document==='undefined')return;
 
 /* ---------- Estat ---------- */
@@ -1000,26 +1200,52 @@ function loadFor(bw,P,mul){
 }
 function variant(e,P){
   var body=P.mat!=='weights',gym=P.mode==='gym',b=body?(gym?e.bg:e.bh):null;
-  if(b)return {n:b.n,f:b.f,t:b.t!=null?b.t:e.t,bw:null,each:false};
-  if(gym)return {n:e.g.n,f:e.fg,t:e.t,bw:e.g.bw,each:!!e.each};
-  return {n:e.h.n,f:e.fh,t:e.t,bw:null,each:false};
+  if(b)return {n:b.n,f:b.f,t:b.t!=null?b.t:e.t,bw:null,each:false,note:b.note||''};
+  if(gym)return {n:e.g.n,f:e.fg,t:e.t,bw:e.g.bw,each:!!e.each,note:''};
+  return {n:e.h.n,f:e.fh,t:e.t,bw:null,each:false,note:''};
 }
-/* Tria els exercicis que caben en 50 min (5 d'escalfament + 5 d'estiraments inclosos). */
+function rng(seed){var a=seed>>>0;return function(){a=(a+0x6D2B79F5)|0;var t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+/* Tria i ordena els candidats de la setmana: el primer exercici és sempre el mateix (per progressar) i la resta rota per grups musculars. */
+function pickPool(pl,di){
+  var wk=weekIndex(mondayOf(di)),R=rng(wk*131+(pl.n||1)*7+3),base=pl.ex,all=base.concat(EXTRA[pl.n]||[]);
+  var order=[],groups={};
+  all.forEach(function(e){var c=e.cat||'x';if(!groups[c]){groups[c]=[];order.push(c);}groups[c].push(e);});
+  order.forEach(function(c){
+    var g=groups[c];for(var i=g.length-1;i>0;i--){var j=Math.floor(R()*(i+1)),t=g[i];g[i]=g[j];g[j]=t;}
+  });
+  var first=base[0],fg=groups[first.cat||'x'];fg.splice(fg.indexOf(first),1);fg.unshift(first);
+  var out=[],more=true;
+  while(more){more=false;order.forEach(function(c){if(groups[c].length){out.push(groups[c].shift());more=true;}});}
+  return out;
+}
+/* Tria els exercicis que caben en 50 min (5 d'escalfament + 5 d'estiraments inclosos). Els exercicis van en superseries (parelles). */
 function build(P,pl,di,noCut){
+  var MAXEX=10,SWITCH=10;
   var G=GOALS[P.goal],pr=prog(P,di),ov=pl.over||{},R=ov.r||G.r,sets0=ov.sets||G.sets,rest0=ov.rest||G.rest;
   var cm=pl.cardio?pl.cardio.mins[goalIdx(P)]:0,budget=3000-600-cm*60,used=0,list=[];
-  for(var i=0;i<pl.ex.length;i++){
-    var e=pl.ex[i];if(pr.b%2===1&&e.alt)e=e.alt;
-    var vr=variant(e,P);
-    var s=Math.max(2,sets0+(pr.c===2&&i<3?1:0)-(pr.c===3&&!noCut?1:0));
-    var lo=R[0]+(pr.c===1?2:0),hi=R[1]+(pr.c===1?2:0),rn=(lo+hi)/2;
-    var tt=vr.t?vr.t+(pr.c===1?5:0):0,rest=vr.t?30:rest0,secs=s*((tt||rn*3)+rest);
-    if(list.length>=4&&used+secs>budget)break;
-    list.push({e:e,vr:vr,i:list.length,sets:s,reps:lo===hi?''+lo:lo+'–'+hi,t:tt,rest:rest,secs:secs});used+=secs;
+  var seen={},cand=pickPool(pl,di).filter(function(e){var n=variant(e,P).n;if(seen[n])return false;seen[n]=1;return true;}),k=0,pi=0;
+  function mk(e){
+    if(pr.b%2===1&&e.alt)e=e.alt;
+    var vr=variant(e,P),lo=R[0]+(pr.c===1?2:0),hi=R[1]+(pr.c===1?2:0),rn=(lo+hi)/2;
+    var tt=vr.t?vr.t+(pr.c===1?5:0):0;
+    return {e:e,vr:vr,reps:lo===hi?''+lo:lo+'–'+hi,t:tt,work:(tt||rn*3),rest:vr.t?30:rest0};
+  }
+  while(k<cand.length&&list.length<MAXEX){
+    var s=Math.max(2,sets0+(pr.c===2&&pi<2?1:0)-(pr.c===3&&!noCut?1:0));
+    var A=mk(cand[k]),B=(k+1<cand.length&&list.length+2<=MAXEX)?mk(cand[k+1]):null;
+    var pair=B?s*(A.work+B.work+SWITCH+Math.max(A.rest,B.rest)):0,one=s*(A.work+A.rest);
+    if(B&&(list.length<4||used+pair<=budget)){
+      var rr=Math.max(A.rest,B.rest);
+      list.push({e:A.e,vr:A.vr,i:list.length,sets:s,reps:A.reps,t:A.t,rest:SWITCH,ss:pi,pos:0,secs:0});
+      list.push({e:B.e,vr:B.vr,i:list.length,sets:s,reps:B.reps,t:B.t,rest:rr,ss:pi,pos:1,secs:pair});
+      used+=pair;k+=2;pi++;
+    }else if(list.length<4||used+one<=budget){
+      list.push({e:A.e,vr:A.vr,i:list.length,sets:s,reps:A.reps,t:A.t,rest:A.rest,ss:-1,pos:0,secs:one});used+=one;k++;pi++;break;
+    }else break;
   }
   var min=Math.round((600+used+cm*60)/60);
   if(pr.c===3&&!noCut&&min<40)return build(P,pl,di,true);
-  return {list:list,cm:cm,pr:pr,min:min};
+  return {list:list,cm:cm,pr:pr,min:min,pairs:pi};
 }
 function nextTrainingDate(P,from){
   var d=parse(from);
@@ -1138,6 +1364,22 @@ g('pullup',['Agafa la barra amb les mans una mica més amples que les espatlles 
 g('hang',['Agafa la barra amb les mans una mica més amples que les espatlles.','Penja’t amb els braços estirats i les espatlles actives, lluny de les orelles.','Aguanta el temps marcat.'],'Respira lent.','Si et canses, posa els peus a terra o doblega els genolls.',['Encongir les espatlles cap a les orelles'],'Deixa un peu o els dos a terra.','Allarga el temps.');
 g('rowinv',['Estira’t sota una barra baixa o una taula resistent i agafa-la amb les mans.','Cos recte com una taula: porta el pit cap a la barra.','Baixa lent estirant els braços.'],'Expira en tirar.','Com més horitzontal el cos, més difícil.',['Malucs caiguts','Tirar només amb els braços'],'Doblega els genolls i apropa els peus.','Eleva els peus sobre un banc.');
 g('wallsit',['Esquena contra la paret i els peus a uns 50 cm.','Baixa fins que les cuixes quedin paral·leles a terra, amb els genolls sobre els turmells.','Aguanta el temps marcat.'],'Respira lent.','Prem l’esquena i el cul contra la paret.',['Genolls més enllà dels peus','Recolzar les mans a les cuixes'],'Baixa menys.','Aixeca un peu uns segons.');
+/* --- Guies noves (v3) --- */
+g('stepup',['Posa tot el peu sobre un banc, escaló o cadira resistent (a l’altura del genoll).','Empeny amb el taló de la cama de dalt i puja fins quedar dret sobre l’escaló.','Baixa lent (3 s) i repeteix amb la mateixa cama abans de canviar.'],'Expira en pujar i inspira en baixar.','Fes la força amb la cama de dalt: no t’impulsis amb la de terra.',['Impulsar-se amb la cama de terra','Genoll cap a dins','Escaló inestable o massa alt'],'Fes servir un escaló més baix.','Afegeix un genoll amunt a dalt o puja més ràpid.');
+g('jumpsquat',['Peus a l’amplada de les espatlles; baixa a un esquat amb el pit alt.','Salta amb força cap amunt estirant malucs, genolls i turmells.','Aterra suau sobre tot el peu, flexionant els genolls, i enllaça amb el següent.'],'Expira en saltar i inspira en baixar.','Aterra en silenci: si fas soroll, estàs aterrant massa dur.',['Aterrar amb els genolls cap a dins','Aterrar amb les cames rígides','Saltar sense baixar prou'],'Esquat normal i puja a les puntes dels peus.','Més altura o una pausa d’1 s abans de cada salt.');
+g('lateral',['De peu amb els peus junts i el pit alt.','Fes un pas ample cap a un costat i porta els malucs enrere flexionant aquesta cama; l’altra queda estesa.','Empeny amb el peu de la cama doblegada per tornar al centre.'],'Inspira en baixar i expira en tornar.','Els dos peus apunten endavant i el taló de la cama doblegada no s’aixeca.',['Taló que s’aixeca','Genoll cap a dins','Tronc molt inclinat endavant'],'Fes un pas més curt i baixa menys.','Afegeix una pausa de 2 s a baix.');
+g('glutemarch',['Tombat de cara amunt amb genolls doblegats i puja els malucs fent un pont.','Mantenint els malucs alts, aixeca un peu cap al pit.','Baixa-lo i alterna amb l’altre, sense que els malucs es moguin.'],'Respira lent i constant.','Imagina un got d’aigua a cada maluc: no es pot vessar.',['Deixar caure els malucs','Arquejar la lumbar','Anar massa ràpid'],'Fes el pont sense aixecar peus.','Aguanta 2 s amb el peu a l’aire.');
+g('skater',['Dret sobre una cama, amb l’altra darrere i el tronc lleugerament inclinat.','Salta lateralment cap a l’altra cama, com un patinador.','Aterra suau amb el genoll flexionat i enllaça amb el salt següent.'],'Respira de manera constant.','Aterra amb el genoll flexionat i controla l’equilibri 1 s abans de saltar.',['Aterrar amb el genoll cap a dins','Salt massa llarg per control','Tensió al coll'],'Fes un pas lateral sense salt.','Salts més amples o amb pausa d’1 s.');
+g('highknees',['Dret, amb el pit alt i els braços a 90°.','Porta un genoll fins a l’altura del maluc mentre l’altre peu toca terra.','Alterna els genolls amb ritme ràpid, sense avançar.'],'Respira de manera ràpida però constant.','Tocs de punta de peu lleugers; el tronc recte, sense inclinar-se enrere.',['Inclinar-se enrere','Genolls massa baixos','Aterrar amb el taló'],'Fes-ho caminant, pujant els genolls.','Accelera durant 10 s i descansa.');
+g('burpee',['Dret: baixa i posa les mans a terra davant dels peus.','Porta els peus enrere fins a la posició de planxa (opcional: una flexió).','Torna els peus cap a les mans, aixeca’t i salta amb els braços amunt.'],'Expira en saltar i inspira en baixar.','Mantén l’abdomen contret a la planxa per no aguantar el pes amb la lumbar.',['Deixar caure la lumbar a la planxa','Moure’s tan ràpid que perds la tècnica'],'Camina els peus enrere i endavant, sense salt.','Afegeix una flexió completa i un salt més alt.');
+g('shouldertap',['Posició de planxa alta, mans sota les espatlles i peus una mica separats.','Aixeca una mà i toca l’espatlla contrària sense moure els malucs.','Torna-la a terra i alterna.'],'Respira lent i constant.','Peus més separats = més estabilitat; junta’ls per fer-ho més difícil.',['Malucs que giren','Cul alt','Anar massa ràpid'],'Genolls a terra.','Peus junts o fes-ho amb els peus elevats.');
+g('tricepkick',['Inclina el tronc 45° amb l’esquena plana i el colze enganxat al costat.','Estira l’avantbraç cap enrere fins que el braç quedi recte.','Baixa lent fins a 90° sense moure el colze.'],'Expira en estirar.','El colze queda fix a l’altura de l’esquena: només treballa l’avantbraç.',['Moure el colze','Pes massa gran','Arrodonir l’esquena'],'Pes lleuger o sense pes.','Pausa de 2 s amb el braç estès.');
+g('uprightrow',['Dret, amb els pesos agafats davant de les cuixes, mans més estretes que les espatlles.','Puja el pes rasant el cos fins a l’altura del pit, portant els colzes cap amunt.','Baixa lent.'],'Expira en pujar.','Els colzes sempre per sobre de les mans, però sense passar de l’altura de les espatlles.',['Pujar massa alt','Encongir les espatlles','Balancejar el cos'],'Pes lleuger.','Baixada en 3 s.');
+g('legraise',['Tombat de cara amunt, mans sota els glutis o als costats i cames estirades.','Aixeca les cames juntes fins a vertical, mantenint la lumbar a terra.','Baixa lent sense tocar el terra.'],'Expira en pujar i inspira en baixar.','Si la lumbar s’arqueja, deixa de baixar: aquest és el teu límit.',['Arquejar la lumbar','Baixar de cop','Aixecar amb impuls'],'Doblega els genolls.','Baixa en 4 s o mantén els peus a 5 cm de terra.');
+g('flutter',['Tombat de cara amunt, mans sota els glutis i cames estirades i elevades.','Fes petites pujades i baixades alternes, com si anessis a nedar.','Mantén la lumbar enganxada a terra.'],'Respira de manera constant.','Com més baixes les cames, més difícil: ajusta’t sense arquejar la lumbar.',['Arquejar la lumbar','Aixecar el cap','Contenir la respiració'],'Cames una mica més altes.','Cames més baixes.');
+g('hollow',['Tombat de cara amunt, braços estirats sobre el cap i cames juntes.','Aixeca els braços, el cap i les cames de terra, formant una banana.','Aguanta el temps marcat amb la lumbar enganxada.'],'Respira lent.','Si la lumbar es despenja, aixeca més les cames.',['Lumbar despenjada','Coll tens','Aguantar l’aire'],'Doblega els genolls o deixa els braços als costats.','Allarga braços i cames.');
+g('vup',['Tombat de cara amunt, braços estirats sobre el cap i cames estirades.','Puja alhora el tronc i les cames cap a una V, tocant els peus amb les mans.','Baixa lent.'],'Expira en pujar i inspira en baixar.','Intenta fer una V amb el cos: el moviment ve de l’abdomen.',['Impulsar-se amb els braços','Arrodonir l’esquena'],'Fes-ho amb els genolls doblegats.','Pausa d’1 s a dalt.');
+g('hangraise',['Penjat d’una barra amb els braços estirats i les espatlles actives.','Puja els genolls cap al pit sense balancejar-te.','Baixa lent fins estirar les cames.'],'Expira en pujar.','Si et balanceges, fes una pausa a baix per estabilitzar-te.',['Balancejar-se','Encongir les espatlles','Baixar de cop'],'Aixeca només un genoll.','Cames estirades fins a la barra.');
 
 function figBox(id,label){
   if(!id||!Figs.has(id))return '';
@@ -1164,6 +1406,7 @@ function viewSessio(P){
   h+='<div class="row" style="margin:10px 0"><span class="chip ac">≈ '+B.min+' min</span><span class="chip">5 min escalfament</span><span class="chip">5 min estiraments</span>'+(pl.optional?'<span class="chip">Opcional</span>':'')+'<span class="chip">'+GOALS[P.goal].label+'</span><span class="chip">'+(P.mat==='weights'?'Amb pesos':'Pes corporal')+'</span></div>';
   h+='<div class="seg" role="group" aria-label="On entrenes"><button type="button" data-a="mode" data-m="gym" aria-pressed="'+(P.mode==='gym')+'">Gimnàs</button><button type="button" data-a="mode" data-m="home" aria-pressed="'+(P.mode==='home')+'">Casa</button></div></div>';
   h+='<div class="note"><b>Setmana '+(pr.w+1)+': '+pr.label+'.</b> '+pr.txt+(fa.t?'<br>'+fa.t:'')+'</div>';
+  h+='<div class="note"><b>Superseries:</b> fes una sèrie de l’exercici A i tot seguit una de la B; després descansa. Així fem més exercicis diferents, amb menys repeticions i més ritme. Cada setmana canvien alguns exercicis.</div>';
   var wu=[['Cardio suau',120,P.mode==='gym'?'Bici o cinta a ritme suau':'Marxa al lloc o jumping jacks suaus'],['Mobilitat articular',60,'Cercles de coll, espatlles, malucs i genolls'],['Mobilitat específica',60,pl.wu],['Sèrie d’aproximació',60,'Una sèrie lleugera (50 % de càrrega) del primer exercici']];
   h+='<div class="card"><div class="row sp"><h3>Escalfament</h3><span class="chip">5 min</span></div><div style="margin-top:6px">';
   wu.forEach(function(w){h+='<div class="srow"><div><div class="t">'+w[0]+'</div><div class="hint">'+w[2]+'</div></div><button class="btn ghost sm" type="button" data-a="tm" data-s="'+w[1]+'" data-l="'+esc(w[0])+'">'+(w[1]===120?'2 min':'1 min')+'</button></div>';});
@@ -1172,9 +1415,10 @@ function viewSessio(P){
   B.list.forEach(function(it,i){
     var e=it.e,vr=it.vr,v=vr,fid=vr.f,count=setsDay[i]||0,complete=count>=it.sets;
     var load=vr.bw?loadFor(vr.bw,P,mul):null;
-    h+='<div class="card ex'+(complete?' complete':'')+'"><div class="head"><div class="num">'+(i+1)+'</div><div><div class="name">'+esc(v.n)+'</div><div class="hint" style="margin-top:2px">'+esc(e.m||'')+'</div></div></div>';
+    h+='<div class="card ex'+(complete?' complete':'')+'"><div class="head"><div class="num">'+(i+1)+'</div><div><div class="name">'+esc(v.n)+'</div><div class="hint" style="margin-top:2px">'+esc(e.m||'')+'</div>'+(it.ss>=0&&(it.pos===1||(B.list[i+1]&&B.list[i+1].ss===it.ss))?'<span class="chip ss">Superserie '+(it.ss+1)+(it.pos?'B':'A')+'</span>':'')+'</div></div>';
     h+=figBox(fid||figId(v.n),v.n);
-    h+='<div class="row sp"><div class="sx">'+it.sets+' × '+(it.t?it.t+' s':it.reps)+'<small>descans '+it.rest+' s</small></div>';
+    if(v.note)h+='<div class="hint">'+esc(v.note)+'</div>';
+    h+='<div class="row sp"><div class="sx">'+it.sets+' × '+(it.t?it.t+' s':it.reps)+'<small>'+(it.ss>=0&&it.pos===0&&B.list[i+1]&&B.list[i+1].ss===it.ss?'passa directe a '+(it.ss+1)+'B':'descans '+it.rest+' s')+'</small></div>';
     if(it.t)h+='<button class="btn sm" type="button" data-a="tm" data-s="'+it.t+'" data-l="'+esc(v.n)+'">Iniciar '+it.t+' s</button>';
     h+='</div>';
     if(load)h+='<div class="hint">Càrrega inicial <b>≈ '+fmt(load)+' kg'+(vr.each?' per mà':'')+'</b>, calculada amb el teu pes. Ajusta-la perquè les últimes repeticions costin.</div>';
@@ -1216,12 +1460,18 @@ function viewDieta(P){
   h+='<div class="macros"><div class="p"><b>'+c.prot+' g</b><span class="small muted">proteïna</span></div><div class="c"><b>'+c.carb+' g</b><span class="small muted">hidrats</span></div><div class="f"><b>'+c.fat+' g</b><span class="small muted">greixos</span></div></div>';
   h+='<p class="hint" style="margin:12px 0 0">Objectiu: <b>'+G.label+'</b>. Gasto estimat '+fmt(c.tdee,0)+' kcal. Beu uns <b>'+fmt(c.water)+' L</b> d’aigua en dies d’entrenament.</p></div>';
   h+='<div class="card"><div class="eyebrow" style="margin-bottom:8px">Canviar objectiu</div>'+goalSeg(P)+'</div>';
-  var dow=parse(UI.sel).getDay(),oi=P.opt;
+  var dn=Math.floor(Date.UTC(parse(UI.sel).getFullYear(),parse(UI.sel).getMonth(),parse(UI.sel).getDate())/864e5),diet=P.diet||'tot';
+  var totOpts=0;MEALS.forEach(function(M){totOpts+=M.o.length;});
+  h+='<div class="card"><div class="eyebrow" style="margin-bottom:8px">Tipus de menú</div><div class="seg wrap" role="group" aria-label="Tipus de menú">';
+  DIETS.forEach(function(d){h+='<button type="button" data-a="diet" data-v="'+d[0]+'" aria-pressed="'+(diet===d[0])+'">'+d[1]+'</button>';});
+  h+='</div><p class="hint" style="margin:8px 0 10px">'+totOpts+' opcions entre tots els àpats. El menú canvia cada dia; pots triar-ne un altre amb les fletxes o amb el dau.</p><button class="btn ghost sm" type="button" data-a="optall">🎲 Sorprèn-me amb un altre menú</button></div>';
   MEALS.forEach(function(M,mi){
-    var sel=oi[mi]!=null?oi[mi]:(dow+mi)%3,o=M.o[sel];
-    h+='<div class="card"><div class="row sp"><div><h3>'+M.n+'</h3><div class="hint">'+M.t+' · ≈ '+fmt(c.kcal*M.p,0)+' kcal · '+Math.round(c.prot*M.p)+' g proteïna</div></div><div class="opts" role="group" aria-label="Opció de '+M.n+'">';
-    ['A','B','C'].forEach(function(l,k){h+='<button type="button" data-a="opt" data-m="'+mi+'" data-k="'+k+'" aria-pressed="'+(sel===k)+'">'+l+'</button>';});
-    h+='</div></div><div style="margin-top:8px;font-weight:600">'+o.t+'</div><ul class="items">';
+    var al=mealAllowed(M,diet),key=UI.sel+'#'+mi,ov=P.opt[key],sel=(ov!=null&&al.indexOf(ov)>=0)?ov:al[(dn+mi*3)%al.length],o=M.o[sel],pos=al.indexOf(sel)+1;
+    h+='<div class="card"><div class="row sp"><div><h3>'+M.n+'</h3><div class="hint">'+M.t+' · ≈ '+fmt(c.kcal*M.p,0)+' kcal · '+Math.round(c.prot*M.p)+' g proteïna</div></div></div>';
+    h+='<div class="optnav" role="group" aria-label="Opció de '+M.n+'"><button type="button" data-a="optn" data-m="'+mi+'" data-d="-1" aria-label="Opció anterior">‹</button><span class="cnt">Opció '+pos+' de '+al.length+'</span><button type="button" data-a="optn" data-m="'+mi+'" data-d="1" aria-label="Opció següent">›</button><button type="button" data-a="optr" data-m="'+mi+'" aria-label="Opció a l’atzar">🎲</button></div>';
+    h+='<div style="margin-top:8px;font-weight:600">'+o.t+'</div><div class="row" style="margin:4px 0">';
+    ['V','G','S','L'].forEach(function(k){if(o.k.indexOf(k)>=0)h+='<span class="chip">'+KLAB[k]+'</span>';});
+    h+='</div><ul class="items">';
     o.i.forEach(function(it){h+='<li><span>'+it[0]+'</span><span>'+qty(it,s)+'</span></li>';});
     h+='</ul></div>';
   });
@@ -1351,7 +1601,18 @@ document.addEventListener('click',function(e){
     touch(ci);render();
   }
   else if(a==='done'){P.done[UI.sel]=!P.done[UI.sel];touch(ci);render();}
-  else if(a==='opt'){P.opt[b.dataset.m]=+b.dataset.k;touch(ci);render();}
+  else if(a==='diet'){P.diet=b.dataset.v;touch(ci);render();}
+  else if(a==='optn'||a==='optr'||a==='optall'){
+    var dd=parse(UI.sel),dnn=Math.floor(Date.UTC(dd.getFullYear(),dd.getMonth(),dd.getDate())/864e5),dt=P.diet||'tot';
+    var ms=a==='optall'?MEALS.map(function(_,q){return q;}):[+b.dataset.m];
+    ms.forEach(function(mi){
+      var M=MEALS[mi],al=mealAllowed(M,dt),key=UI.sel+'#'+mi,ov=P.opt[key],cur=(ov!=null&&al.indexOf(ov)>=0)?ov:al[(dnn+mi*3)%al.length],nx;
+      if(a==='optn'){var p=al.indexOf(cur);nx=al[(p+(+b.dataset.d)+al.length)%al.length];}
+      else{do{nx=al[Math.floor(Math.random()*al.length)];}while(al.length>1&&nx===cur);}
+      P.opt[key]=nx;
+    });
+    touch(ci);render();
+  }
   else if(a==='goal'){P.goal=b.dataset.g;P.custom=true;touch(ci);render();}
   else if(a==='rest'){var mon=b.dataset.mon;P.rest[mon]=P.rest[mon]||{};P.rest[mon].d=+b.dataset.w;touch(ci);render();}
   else if(a==='restauto'){var m2=b.dataset.mon;if(P.rest[m2]){delete P.rest[m2].d;}touch(ci);render();}
